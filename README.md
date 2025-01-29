@@ -1,2 +1,2 @@
-# Notes-
+# Notes++
 Notes app but better (hopefully)
