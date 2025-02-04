@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NotesApp.Services;
 
 namespace Notes__
 {
@@ -15,9 +16,10 @@ namespace Notes__
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            //builder.Services.AddSingleton<FolderService>();
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
 
