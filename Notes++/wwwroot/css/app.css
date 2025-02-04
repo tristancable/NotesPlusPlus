@@ -69,6 +69,21 @@ h1:focus {
     display: none;
 }
 
+.nav-link {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+}
+
+    .nav-link span.bi {
+        font-size: 1.2rem; /* Ensures all icons are the same size */
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
 @supports (-webkit-touch-callout: none) {
     .status-bar-safe-area {
         display: flex;
