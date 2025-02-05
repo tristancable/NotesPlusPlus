@@ -1,0 +1,119 @@
+﻿@page "/note/{folderName}/{fileName}"
+@using Notes__.Utilities
+@inject FolderService FolderService
+@inject NavigationManager Navigation
+
+<div class="dropdown">
+    <button class="dropbtn" @onclick="ToggleDropdown">New Note Page</button>
+    <div class="dropdown-content" style="@(isOpen ? "display: block;" : "display: none;")">
+        <button @onclick="CreateBasicNotePage">Create New Basic Note Page</button>
+    </div>
+</div>
+
+<div class="input-container">
+    <input @bind="newNote" @oninput="OnSearchInput" @onkeydown="HandleKeyPress" placeholder="Search or write a note..." />
+</div>
+
+<ul>
+    @foreach (var note in filteredNotes)
+    {
+        <li class="note">
+            <span class="note-text">@note</span>
+            <div class="buttons">
+                <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
+                <button class="delete-button" @onclick="() => DeleteNote(note)">Delete</button>
+            </div>
+        </li>
+    }
+</ul>
+
+@code {
+    [Parameter] public string folderName { get; set; }
+    [Parameter] public string fileName { get; set; }
+
+    private List<string> notes = new();
+    private List<string> filteredNotes = new();
+    private string newNote = "";
+    private string currentNoteToEdit = null;
+    private string addOrEditButtonText = "Add Note";
+    private bool isOpen = false;
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrWhiteSpace(folderName) && !string.IsNullOrWhiteSpace(fileName))
+        {
+            LoadFile();
+        }
+    }
+
+    private void ToggleDropdown() => isOpen = !isOpen;
+
+    void OnSearchInput(ChangeEventArgs e)
+    {
+        newNote = e.Value.ToString();
+        FilterNotes();
+    }
+
+    void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") AddNoteOrEditNote();
+    }
+
+    void AddNoteOrEditNote()
+    {
+        if (!string.IsNullOrWhiteSpace(newNote))
+        {
+            if (currentNoteToEdit != null)
+            {
+                int index = notes.IndexOf(currentNoteToEdit);
+                notes[index] = newNote;
+                currentNoteToEdit = null;
+                addOrEditButtonText = "Add Note";
+            }
+            else
+            {
+                notes.Add(newNote);
+            }
+            newNote = "";
+            SaveFile();
+            FilterNotes();
+        }
+    }
+
+    void LoadFile()
+    {
+        var content = FolderService.ReadFileContent(folderName, fileName);
+        notes = string.IsNullOrWhiteSpace(content) ? new List<string>() : new List<string>(content.Split('\n'));
+        FilterNotes();
+    }
+
+    void SaveFile()
+    {
+        FolderService.SaveFileContent(folderName, fileName, string.Join("\n", notes));
+    }
+
+    void FilterNotes()
+    {
+        filteredNotes = string.IsNullOrEmpty(newNote) ? notes :
+            notes.Where(n => n.Contains(newNote, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
+    void EditNote(string note)
+    {
+        newNote = note;
+        currentNoteToEdit = note;
+        addOrEditButtonText = "Save Changes";
+    }
+
+    void DeleteNote(string note)
+    {
+        notes.Remove(note);
+        SaveFile();
+        FilterNotes();
+    }
+
+    void CreateBasicNotePage()
+    {
+        Navigation.NavigateTo($"/note/{folderName}/NewNote{DateTime.Now.Ticks}");
+    }
+}

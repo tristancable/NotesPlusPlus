@@ -4,8 +4,12 @@
 
 <h3>Folders</h3>
 
-<!-- Display the folders dynamically from FolderService -->
+<!-- Display the folders dynamically -->
 <div>
+    <!-- Input for folder name -->
+    <input @bind="newFolderName" placeholder="Enter folder name" />
+    <button @onclick="CreateFolder">Create New Folder</button>
+
     <ul>
         @foreach (var folderName in folders)
         {
@@ -14,21 +18,25 @@
             </li>
         }
     </ul>
-    <button @onclick="CreateFolder">Create New Folder</button>
 </div>
 
 @code {
     private List<string> folders = new();
+    private string newFolderName = string.Empty;
 
-    // Load folders from FolderService
+    // Load folders on page initialization
     protected override void OnInitialized()
     {
-        folders = FolderService.GetFolders(); // Get folder names as strings
+        folders = FolderService.GetFolders();
     }
 
     private void CreateFolder()
     {
-        FolderService.CreateFolder("NewFolder"); // Replace with actual folder creation logic
-        folders = FolderService.GetFolders(); // Reload folders after creating a new one
+        if (!string.IsNullOrWhiteSpace(newFolderName))
+        {
+            FolderService.CreateFolder(newFolderName);
+            folders = FolderService.GetFolders(); // Refresh folders
+            newFolderName = string.Empty; // Clear input field
+        }
     }
 }
