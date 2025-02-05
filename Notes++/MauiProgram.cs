@@ -17,6 +17,7 @@ namespace Notes__
 
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddSingleton<FolderService>();
+            builder.Services.AddSingleton<LayoutService>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

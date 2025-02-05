@@ -1,4 +1,7 @@
 ﻿@page "/notes"
+@using Notes__.Utilities
+@inject LayoutService LayoutService
+
 
 <div class="dropdown">
     <button class="dropbtn" @onclick="ToggleDropdown">New Note Page</button>
@@ -43,6 +46,9 @@
     private bool isOpen = false;
     private EFormat format = EFormat.BASIC;
 
+    private static string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Notes++");
+
+
     private void ToggleDropdown()
     {
         isOpen = !isOpen;
@@ -58,6 +64,7 @@
     // Handles Enter key press for adding or editing the note
     void HandleKeyPress(KeyboardEventArgs e)
     {
+        LoadNoteFromFile();
         if (e.Key == "Enter")
         {
             AddNoteOrEditNote();
@@ -83,9 +90,34 @@
                 notes.Add(newNote);
             }
             newNote = "";
+            SaveNoteToFile();
             FilterNotes();
         }
     }
+
+    void SaveNoteToFile()
+    {
+        string filePath = Path.Combine(basePath, $"{LayoutService.PageTitle}.txt");
+
+        Directory.CreateDirectory(basePath);
+
+        File.WriteAllLines(filePath, notes);
+    }
+
+    void LoadNoteFromFile()
+    {
+        string filePath = Path.Combine(basePath, $"{LayoutService.PageTitle}.txt");
+
+        if (File.Exists(filePath))
+        {
+            notes = new List<string>(File.ReadAllLines(filePath));
+        }
+        else
+        {
+            notes = new List<string>(); // Avoid null reference errors
+        }
+    }
+
 
     // Filter notes based on the search input
     void FilterNotes()
@@ -112,6 +144,7 @@
     void DeleteNote(string note)
     {
         notes.Remove(note);
+        SaveNoteToFile();
         FilterNotes(); // Reapply filter after deletion
     }
 
