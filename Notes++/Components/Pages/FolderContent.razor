@@ -6,15 +6,22 @@
 <h3>@folderName Folder</h3>
 
 <div>
-    <input @bind="newFileName" placeholder="Enter file name" />
-    <button @onclick="CreateFile">Create New File</button>
+    <div class="creation-button">
+        <input @bind="newFileName" placeholder="Enter file name" />
+        <button @onclick="CreateFile">Create File</button>
+    </div>
 
-    <ul>
+    <ul class="file-list">
         @foreach (var file in files)
         {
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file);
-            <li>
-                <a href="@($"/note/{folderName}/{fileNameWithoutExtension}")">@fileNameWithoutExtension</a>
+            <li class="file-item">
+                <a href="@($"/note/{folderName}/{fileNameWithoutExtension}")" class="file-link">
+                    <i class="file-icon">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </i>
+                    @fileNameWithoutExtension
+                </a>
             </li>
         }
     </ul>

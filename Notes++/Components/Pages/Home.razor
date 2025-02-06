@@ -4,21 +4,24 @@
 
 <h3>Folders</h3>
 
-<!-- Display the folders dynamically -->
-<div>
-    <!-- Input for folder name -->
+<div class="creation-button">
     <input @bind="newFolderName" placeholder="Enter folder name" />
     <button @onclick="CreateFolder">Create New Folder</button>
-
-    <ul>
-        @foreach (var folderName in folders)
-        {
-            <li>
-                <a href="@($"/folder/{folderName}")">@folderName</a>
-            </li>
-        }
-    </ul>
 </div>
+
+<ul class="folder-list">
+    @foreach (var folderName in folders)
+    {
+        <li class="folder-item">
+            <a href="@($"/folder/{folderName}")" class="folder-link">
+                <i class="folder-icon">
+                <i class="bi bi-folder"></i>
+                </i>
+                @folderName
+            </a>
+        </li>
+    }
+</ul>
 
 @code {
     private List<string> folders = new();
