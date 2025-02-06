@@ -1,6 +1,7 @@
 ﻿@page "/note/{folderName}/{fileName}"
 @using Notes__.Utilities
 @inject FolderService FolderService
+@inject LayoutService LayoutService
 @inject NavigationManager Navigation
 
 <div class="dropdown">
@@ -40,9 +41,10 @@
 
     protected override void OnInitialized()
     {
+        // This will be called when the page is first initialized
         if (!string.IsNullOrWhiteSpace(folderName) && !string.IsNullOrWhiteSpace(fileName))
         {
-            LoadFile();
+            LoadFile(); // Load the file content
         }
     }
 
@@ -80,11 +82,21 @@
         }
     }
 
+    // This is the method that loads the file content
     void LoadFile()
     {
+        if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+        {
+            fileName += ".txt";
+        }
+
         var content = FolderService.ReadFileContent(folderName, fileName);
+        Console.WriteLine($"Reading from: {folderName}/{fileName}");
+        Console.WriteLine($"File Content: {content}");
+
         notes = string.IsNullOrWhiteSpace(content) ? new List<string>() : new List<string>(content.Split('\n'));
         FilterNotes();
+        StateHasChanged(); // Ensure UI updates after loading file
     }
 
     void SaveFile()
