@@ -2,6 +2,24 @@
 {
     public class LayoutService
     {
+        public enum EFormat
+        {
+            BASIC,
+            BULLETPOINT,
+            NUMBERED
+        }
+        private int _editNumber = -1;
+        public int EditNumber
+        {
+            get => _editNumber;
+            set => _editNumber = value;
+        }
+        private EFormat _format = EFormat.BASIC;
+        public EFormat Format
+        {
+            get => _format;
+            set => _format = value;
+        }
         private string _pageTitle = "Untitled Note Page";
 
         public string PageTitle

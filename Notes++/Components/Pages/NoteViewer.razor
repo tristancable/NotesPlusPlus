@@ -4,13 +4,6 @@
 @inject LayoutService LayoutService
 @inject NavigationManager Navigation
 
-<div class="dropdown">
-    <button class="dropbtn" @onclick="ToggleDropdown">New Note Page</button>
-    <div class="dropdown-content" style="@(isOpen ? "display: block;" : "display: none;")">
-        <button @onclick="CreateBasicNotePage">Create New Basic Note Page</button>
-    </div>
-</div>
-
 <div class="input-container">
     <input @bind="newNote" @oninput="OnSearchInput" @onkeydown="HandleKeyPress" placeholder="Search or write a note..." />
 </div>
@@ -37,7 +30,6 @@
     private string newNote = "";
     private string currentNoteToEdit = null;
     private string addOrEditButtonText = "Add Note";
-    private bool isOpen = false;
 
     protected override void OnInitialized()
     {
@@ -47,8 +39,6 @@
             LoadFile(); // Load the file content
         }
     }
-
-    private void ToggleDropdown() => isOpen = !isOpen;
 
     void OnSearchInput(ChangeEventArgs e)
     {
@@ -67,14 +57,49 @@
         {
             if (currentNoteToEdit != null)
             {
-                int index = notes.IndexOf(currentNoteToEdit);
-                notes[index] = newNote;
-                currentNoteToEdit = null;
-                addOrEditButtonText = "Add Note";
+                // Edit existing note
+                int index = -1;
+                switch (LayoutService.Format)
+                {
+                    case LayoutService.EFormat.BULLETPOINT:
+                        index = notes.IndexOf("• " + currentNoteToEdit);
+                        break;
+                    case LayoutService.EFormat.NUMBERED:
+                        index = notes.IndexOf($"{LayoutService.EditNumber}." + currentNoteToEdit);
+                        break;
+                    default:
+                        index = notes.IndexOf(currentNoteToEdit);
+                        break;
+                }
+                switch (LayoutService.Format)
+                {
+                    case LayoutService.EFormat.BULLETPOINT:
+                        notes[index] = "• " + newNote;
+                        break;
+                    case LayoutService.EFormat.NUMBERED:
+                        notes[index] = $"{index + 1}. " + newNote;
+                        break;
+                    default:
+                        notes[index] = newNote;
+                        break;
+                }
+                currentNoteToEdit = null; // Reset edit context
+                addOrEditButtonText = "Add Note"; // Reset button text
             }
             else
             {
-                notes.Add(newNote);
+                switch (LayoutService.Format)
+                {
+                    case LayoutService.EFormat.BULLETPOINT:
+                        notes.Add("• " + newNote);
+                        break;
+                    case LayoutService.EFormat.NUMBERED:
+                        notes.Add($"{notes.Count() + 1}. " + newNote);
+                        break;
+                    default:
+                        notes.Add(newNote);
+                        break;
+                }
             }
             newNote = "";
             SaveFile();
@@ -112,20 +137,40 @@
 
     void EditNote(string note)
     {
-        newNote = note;
-        currentNoteToEdit = note;
-        addOrEditButtonText = "Save Changes";
+        if (LayoutService.Format == LayoutService.EFormat.BULLETPOINT)
+        {
+            newNote = note.Substring(2);
+            currentNoteToEdit = note.Substring(2);
+
+        }
+        else if (LayoutService.Format == LayoutService.EFormat.NUMBERED)
+        {
+            int n;
+            int.TryParse(note.Substring(0, 1), out n);
+            LayoutService.EditNumber = n;
+            newNote = note.Substring(2);
+            currentNoteToEdit = note.Substring(2);
+        }
+        else
+        {
+            newNote = note;
+            currentNoteToEdit = note; // Set the note being edited
+        }
+        addOrEditButtonText = "Save Changes"; // Change button text to "Save Changes"
     }
 
     void DeleteNote(string note)
     {
         notes.Remove(note);
+        if (LayoutService.Format == LayoutService.EFormat.NUMBERED)
+        {
+            for (int i = 0; i < notes.Count(); i++)
+            {
+                string n = notes[i].Substring(1, notes[i].Length - 1);
+                notes[i] = $"{i + 1}{n}";
+            }
+        }
         SaveFile();
-        FilterNotes();
-    }
-
-    void CreateBasicNotePage()
-    {
-        Navigation.NavigateTo($"/note/{folderName}/NewNote{DateTime.Now.Ticks}");
+        FilterNotes(); // Reapply filter after deletion
     }
 }
