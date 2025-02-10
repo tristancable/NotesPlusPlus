@@ -7,6 +7,8 @@
     <button class="dropbtn" @onclick="ToggleDropdown">New Note Page</button>
     <div class="dropdown-content" style="@(isOpen ? "display: block;" : "display: none;")">
         <button @onclick="CreateBasicNotePage">@createNotePageText</button>
+        <button @onclick="CreateBulletPointNotePage">@createBulletPointNotePageText</button>
+        <button @onclick="CreateNumberedNotePage">@createNumberedNotePageText</button>
     </div>
 </div>
 
@@ -43,7 +45,10 @@
     private string currentNoteToEdit = null; // Store the note being edited
     private string addOrEditButtonText = "Add Note"; // Button text for Add or Edit
     private string createNotePageText = "Create New Basic Note Page";
+    private string createBulletPointNotePageText = "Create New Bullet Point Note Page";
+    private string createNumberedNotePageText = "Create New Numbered Note Page";
     private bool isOpen = false;
+    private int editNumber = -1;
     private EFormat format = EFormat.BASIC;
 
     private static string basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Notes++");
@@ -79,15 +84,48 @@
             if (currentNoteToEdit != null)
             {
                 // Edit existing note
-                int index = notes.IndexOf(currentNoteToEdit);
-                notes[index] = newNote;
+                int index = -1;
+                switch (format)
+                {
+                    case EFormat.BULLETPOINT:
+                        index = notes.IndexOf("• " + currentNoteToEdit);
+                        break;
+                    case EFormat.NUMBERED:
+                        index = notes.IndexOf($"{editNumber}." + currentNoteToEdit);
+                        break;
+                    default:
+                        index = notes.IndexOf(currentNoteToEdit);
+                        break;
+                }
+                switch (format)
+                {
+                    case EFormat.BULLETPOINT:
+                        notes[index] = "• " + newNote;
+                        break;
+                    case EFormat.NUMBERED:
+                        notes[index] = $"{index + 1}. " + newNote;
+                        break;
+                    default:
+                        notes[index] = newNote;
+                        break;
+                }
                 currentNoteToEdit = null; // Reset edit context
                 addOrEditButtonText = "Add Note"; // Reset button text
             }
             else
             {
-                // Add new note
-                notes.Add(newNote);
+                switch (format)
+                {
+                    case EFormat.BULLETPOINT:
+                        notes.Add("• " + newNote);
+                        break;
+                    case EFormat.NUMBERED:
+                        notes.Add($"{notes.Count() + 1}. " + newNote);
+                        break;
+                    default:
+                        notes.Add(newNote);
+                        break;
+                }
             }
             newNote = "";
             SaveNoteToFile();
@@ -135,8 +173,23 @@
     // Allow editing by placing the note text into the input box
     void EditNote(string note)
     {
-        newNote = note;
-        currentNoteToEdit = note; // Set the note being edited
+        if (format == EFormat.BULLETPOINT)
+        {
+            newNote = note.Substring(2);
+            currentNoteToEdit = note.Substring(2);
+
+        }
+        else if (format == EFormat.NUMBERED)
+        {
+            int.TryParse(note.Substring(0, 1), out editNumber);
+            newNote = note.Substring(2);
+            currentNoteToEdit = note.Substring(2);
+        }
+        else
+        {
+            newNote = note;
+            currentNoteToEdit = note; // Set the note being edited
+        }
         addOrEditButtonText = "Save Changes"; // Change button text to "Save Changes"
     }
 
@@ -144,6 +197,15 @@
     void DeleteNote(string note)
     {
         notes.Remove(note);
+        if (format == EFormat.NUMBERED)
+        {
+            for (int i = 0; i < notes.Count(); i++)
+            {
+                var s = notes[i].Length;
+                string n = notes[i].Substring(1, notes[i].Length - 1);
+                notes[i] = $"{i + 1}{n}";
+            }
+        }
         SaveNoteToFile();
         FilterNotes(); // Reapply filter after deletion
     }
@@ -152,6 +214,27 @@
     void CreateBasicNotePage()
     {
         format = EFormat.BASIC;
+        notes.Clear();
         filteredNotes.Clear();
+        currentNoteToEdit = null;
+        SaveNoteToFile();
+    }
+
+    void CreateBulletPointNotePage()
+    {
+        format = EFormat.BULLETPOINT;
+        notes.Clear();
+        filteredNotes.Clear();
+        currentNoteToEdit = null;
+        SaveNoteToFile();
+    }
+
+    void CreateNumberedNotePage()
+    {
+        format = EFormat.NUMBERED;
+        notes.Clear();
+        filteredNotes.Clear();
+        currentNoteToEdit = null;
+        SaveNoteToFile();
     }
 }
