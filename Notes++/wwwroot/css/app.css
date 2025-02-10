@@ -107,6 +107,11 @@ ul {
     margin-top: 10px;
 }
 
+.note-list {
+    list-style: none;
+    padding: 0;
+}
+
 .note {
     display: flex;
     justify-content: space-between;
@@ -125,6 +130,10 @@ ul {
 
     .note:hover {
         background-color: #f0f0f0;
+    }
+
+    .note:active {
+        cursor: grabbing;
     }
 
 .note-text {

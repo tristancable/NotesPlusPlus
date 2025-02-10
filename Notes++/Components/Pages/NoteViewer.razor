@@ -18,7 +18,11 @@
 <ul>
     @foreach (var note in filteredNotes)
     {
-        <li class="note">
+        <li class="note" 
+            @key="note"
+            @onpointerdown="(e) => OnNoteDragStart(e, note)"
+            @onpointermove="(e) => OnNoteDragMove(e, note)"
+            @onpointerup="(e) => OnNoteDragEnd(e, note)">
             <span class="note-text">@note</span>
             <div class="buttons">
                 <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
@@ -39,9 +43,11 @@
     private string addOrEditButtonText = "Add Note";
     private bool isOpen = false;
 
+    private string draggedNote = null; // The note being dragged
+    private int dragStartIndex = -1; // Index of the note being dragged
+
     protected override void OnInitialized()
     {
-        // This will be called when the page is first initialized
         if (!string.IsNullOrWhiteSpace(folderName) && !string.IsNullOrWhiteSpace(fileName))
         {
             LoadFile(); // Load the file content
@@ -82,33 +88,63 @@
         }
     }
 
-    // This is the method that loads the file content
     void LoadFile()
     {
-        if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+        try
         {
-            fileName += ".txt";
+            if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                fileName += ".txt";
+            }
+
+            var content = FolderService.ReadFileContent(folderName, fileName);
+            if (content == null)
+            {
+                Console.WriteLine("File content is empty or null.");
+            }
+            else
+            {
+                Console.WriteLine($"File content loaded: {content.Length} characters.");
+            }
+
+            notes = string.IsNullOrWhiteSpace(content) ? new List<string>() : new List<string>(content.Split('\n'));
+            FilterNotes();
         }
-
-        var content = FolderService.ReadFileContent(folderName, fileName);
-        Console.WriteLine($"Reading from: {folderName}/{fileName}");
-        Console.WriteLine($"File Content: {content}");
-
-        notes = string.IsNullOrWhiteSpace(content) ? new List<string>() : new List<string>(content.Split('\n'));
-        FilterNotes();
-        StateHasChanged(); // Ensure UI updates after loading file
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading file: {ex.Message}");
+        }
     }
+
 
     void SaveFile()
     {
-        FolderService.SaveFileContent(folderName, fileName, string.Join("\n", notes));
+        try
+        {
+            FolderService.SaveFileContent(folderName, fileName, string.Join("\n", notes));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving file: {ex.Message}");
+        }
     }
+
 
     void FilterNotes()
     {
-        filteredNotes = string.IsNullOrEmpty(newNote) ? notes :
-            notes.Where(n => n.Contains(newNote, StringComparison.OrdinalIgnoreCase)).ToList();
+        try
+        {
+            filteredNotes = string.IsNullOrEmpty(newNote) ? notes :
+                notes.Where(n => n.Contains(newNote, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            Console.WriteLine($"Filtered notes count: {filteredNotes.Count}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error filtering notes: {ex.Message}");
+        }
     }
+
 
     void EditNote(string note)
     {
@@ -127,5 +163,37 @@
     void CreateBasicNotePage()
     {
         Navigation.NavigateTo($"/note/{folderName}/NewNote{DateTime.Now.Ticks}");
+    }
+
+    // Start dragging a note
+    void OnNoteDragStart(PointerEventArgs e, string note)
+    {
+        draggedNote = note;
+        dragStartIndex = notes.IndexOf(note);
+    }
+
+    // Move the dragged note (optional UI effect can be added)
+    void OnNoteDragMove(PointerEventArgs e, string note)
+    {
+        // Here you could visually show the note being dragged, if desired.
+    }
+
+    // Drop the note to reorder
+    void OnNoteDragEnd(PointerEventArgs e, string targetNote)
+    {
+        if (draggedNote != null && draggedNote != targetNote)
+        {
+            int targetIndex = notes.IndexOf(targetNote);
+            // Remove the dragged note and insert it at the target position
+            notes.Remove(draggedNote);
+            notes.Insert(targetIndex, draggedNote);
+
+            SaveFile(); // Save the updated order to the file
+            FilterNotes(); // Refresh the displayed notes list
+        }
+
+        // Reset after drag ends
+        draggedNote = null;
+        dragStartIndex = -1;
     }
 }
