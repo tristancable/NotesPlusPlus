@@ -3,8 +3,6 @@
 @inject FolderService FolderService
 @inject LayoutService LayoutService
 
-<h3>@folderName Folder</h3>
-
 <div>
     <div class="creation-button">
         <input @bind="newFileName" placeholder="Enter file name" />
@@ -35,14 +33,7 @@
 
     protected override void OnParametersSet()
     {
-        // Update the title to reflect the folder name
-        LayoutService.PageTitle = folderName;
-
-        files = FolderService.GetFilesInFolder(folderName);
-    }
-
-    protected override void OnInitialized()
-    {
+        LayoutService.PageTitle = $"/{folderName}";
         files = FolderService.GetFilesInFolder(folderName);
     }
 
