@@ -1,8 +1,7 @@
 ﻿@page "/"
 @using Notes__.Utilities
 @inject FolderService FolderService
-
-<h3>Folders</h3>
+@inject LayoutService LayoutService
 
 <div class="creation-button">
     <input @bind="newFolderName" placeholder="Enter folder name" />
@@ -27,9 +26,9 @@
     private List<string> folders = new();
     private string newFolderName = string.Empty;
 
-    // Load folders on page initialization
     protected override void OnInitialized()
     {
+        LayoutService.PageTitle = "Your Folders";
         folders = FolderService.GetFolders();
     }
 
@@ -38,8 +37,8 @@
         if (!string.IsNullOrWhiteSpace(newFolderName))
         {
             FolderService.CreateFolder(newFolderName);
-            folders = FolderService.GetFolders(); // Refresh folders
-            newFolderName = string.Empty; // Clear input field
+            folders = FolderService.GetFolders();
+            newFolderName = string.Empty;
         }
     }
 }
