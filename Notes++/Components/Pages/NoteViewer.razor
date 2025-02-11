@@ -78,9 +78,10 @@
                     switch (LayoutService.Format) // Update the content of the note
                     {
                         case LayoutService.EFormat.BULLETPOINT:
+                            noteToEdit.Content = $"• {newNote}";
                             break;
                         case LayoutService.EFormat.NUMBERED:
-                            noteToEdit.Content = $" {newNote}";
+                            noteToEdit.Content = $". {newNote}";
                             break;
                         default:
                             noteToEdit.Content = newNote;

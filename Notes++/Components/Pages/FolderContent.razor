@@ -6,7 +6,9 @@
 <div>
     <div class="creation-button">
         <input @bind="newFileName" placeholder="Enter file name" />
-        <button @onclick="CreateFile">Create File</button>
+        <button @onclick="CreateBasicFile">Create Basic File</button>
+        <button @onclick="CreateBulletpointFile">Create Bulletpoint File</button>
+        <button @onclick="CreateNumberedFile">Create Numbered File</button>
     </div>
 
     <ul class="file-list">
@@ -37,11 +39,31 @@
         files = FolderService.GetFilesInFolder(folderName);
     }
 
-    private void CreateFile()
+    private void CreateBasicFile()
     {
         if (!string.IsNullOrWhiteSpace(newFileName))
         {
             FolderService.CreateFileInFolder(folderName, newFileName);
+            files = FolderService.GetFilesInFolder(folderName);
+            newFileName = string.Empty;
+        }
+    }
+
+    private void CreateBulletpointFile()
+    {
+        if (!string.IsNullOrWhiteSpace(newFileName))
+        {
+            FolderService.CreateFileInFolder(folderName, $"{newFileName} - B");
+            files = FolderService.GetFilesInFolder(folderName);
+            newFileName = string.Empty;
+        }
+    }
+
+    private void CreateNumberedFile()
+    {
+        if (!string.IsNullOrWhiteSpace(newFileName))
+        {
+            FolderService.CreateFileInFolder(folderName, $"{newFileName} - N");
             files = FolderService.GetFilesInFolder(folderName);
             newFileName = string.Empty;
         }
