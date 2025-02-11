@@ -47,6 +47,9 @@
     {
         if (!string.IsNullOrWhiteSpace(folderName) && !string.IsNullOrWhiteSpace(fileName))
         {
+            if (fileName.EndsWith(" - B")) LayoutService.Format = LayoutService.EFormat.BULLETPOINT;
+            else if (fileName.EndsWith(" - N")) LayoutService.Format = LayoutService.EFormat.NUMBERED;
+            else LayoutService.Format = LayoutService.EFormat.BASIC;
             LoadFile(); // Load the file content
         }
     }
@@ -72,7 +75,17 @@
                 var noteToEdit = notes.FirstOrDefault(n => n.Id.ToString() == currentNoteToEdit);
                 if (noteToEdit != null)
                 {
-                    noteToEdit.Content = newNote;  // Update the content of the note
+                    switch (LayoutService.Format) // Update the content of the note
+                    {
+                        case LayoutService.EFormat.BULLETPOINT:
+                            break;
+                        case LayoutService.EFormat.NUMBERED:
+                            noteToEdit.Content = $" {newNote}";
+                            break;
+                        default:
+                            noteToEdit.Content = newNote;
+                            break;
+                    }
                     currentNoteToEdit = null;  // Reset edit context
                     addOrEditButtonText = "Add Note";  // Reset button text
                 }
