@@ -35,9 +35,6 @@
     private string currentNoteToEdit = null;
     private string addOrEditButtonText = "Add Note";
 
-    private Note draggedNote = null;  // The note being dragged
-    private int dragStartIndex = -1; // Index of the note being dragged
-
     protected override void OnParametersSet()
     {
         LayoutService.PageTitle = $"/{folderName}/{fileName}";
