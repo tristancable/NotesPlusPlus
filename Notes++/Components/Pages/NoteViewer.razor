@@ -78,7 +78,7 @@
                             noteToEdit.Content = $"• {newNote}";
                             break;
                         case LayoutService.EFormat.NUMBERED:
-                            noteToEdit.Content = $". {newNote}";
+                            noteToEdit.Content = $"{LayoutService.EditNumber}. {newNote}";
                             break;
                         default:
                             noteToEdit.Content = newNote;
@@ -90,8 +90,18 @@
             }
             else
             {
-                // Add new note
-                notes.Add(new Note(newNote));  // Add a new note with a unique ID
+                switch (LayoutService.Format) // Add new note
+                {
+                    case LayoutService.EFormat.BULLETPOINT:
+                        notes.Add(new Note($"• {newNote}"));
+                        break;
+                    case LayoutService.EFormat.NUMBERED:
+                        notes.Add(new Note($"{notes.Count() + 1}. {newNote}"));
+                        break;
+                    default:
+                        notes.Add(new Note(newNote)); // Add a new note with a unique ID
+                        break;
+                }
             }
 
             newNote = "";
@@ -161,7 +171,21 @@
     {
         // Set the currentNoteToEdit to the Id of the note being edited
         currentNoteToEdit = note.Id.ToString();
-        newNote = note.Content;
+        switch (LayoutService.Format)
+        {
+            case LayoutService.EFormat.BULLETPOINT:
+                newNote = note.Content.Substring(2);
+                break;
+            case LayoutService.EFormat.NUMBERED:
+                int editNumber;
+                int.TryParse(note.Content.Substring(0, 1), out editNumber);
+                LayoutService.EditNumber = editNumber;
+                newNote = note.Content.Substring(2);
+                break;
+            default:
+                newNote = note.Content;
+                break;
+        }
         addOrEditButtonText = "Save Changes"; // Change button text to "Save Changes"
     }
 
@@ -171,6 +195,7 @@
         if (noteToDelete != null)
         {
             notes.Remove(noteToDelete);
+            ReorderNumbers();
             SaveFile();
         }
     }
@@ -182,6 +207,7 @@
             var temp = filteredNotes[index];
             filteredNotes[index] = filteredNotes[index - 1];
             filteredNotes[index - 1] = temp;
+            ReorderNumbers();
             SaveFile();
             FilterNotes();
         }
@@ -194,8 +220,22 @@
             var temp = filteredNotes[index];
             filteredNotes[index] = filteredNotes[index + 1];
             filteredNotes[index + 1] = temp;
+            ReorderNumbers();
             SaveFile();
             FilterNotes();
         }
+    }
+
+    void ReorderNumbers()
+    {
+        if (LayoutService.Format == LayoutService.EFormat.NUMBERED)
+            {
+                for (int i = 0; i < notes.Count(); i++)
+                {
+                    var s = notes[i].Content.Length;
+                    string n = notes[i].Content.Substring(1, notes[i].Content.Length - 1);
+                    notes[i].Content = $"{i + 1}{n}";
+                }
+            }
     }
 }

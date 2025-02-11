@@ -46,6 +46,7 @@
             FolderService.CreateFileInFolder(folderName, newFileName);
             files = FolderService.GetFilesInFolder(folderName);
             newFileName = string.Empty;
+            LayoutService.Format = LayoutService.EFormat.BASIC;
         }
     }
 
@@ -56,6 +57,7 @@
             FolderService.CreateFileInFolder(folderName, $"{newFileName} - B");
             files = FolderService.GetFilesInFolder(folderName);
             newFileName = string.Empty;
+            LayoutService.Format = LayoutService.EFormat.BULLETPOINT;
         }
     }
 
@@ -66,6 +68,7 @@
             FolderService.CreateFileInFolder(folderName, $"{newFileName} - N");
             files = FolderService.GetFilesInFolder(folderName);
             newFileName = string.Empty;
+            LayoutService.Format = LayoutService.EFormat.NUMBERED;
         }
     }
 }
