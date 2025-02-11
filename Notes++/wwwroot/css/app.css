@@ -70,6 +70,7 @@ h1:focus {
 }
 
 .nav-link {
+.nav-link { /* Notes button in the sidebar*/
     display: flex;
     align-items: center;
     font-size: 1rem;
@@ -87,6 +88,7 @@ h1:focus {
 .page-title {
     font-size: 1.5rem;
     font-weight: bold;
+    color: #3E3C32; /* Text color for title */
 }
 
 .input-container {
@@ -107,11 +109,38 @@ ul {
     margin-top: 10px;
 }
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+.navbar-toggler {
+    background-color: #0056b3;
+}
+
+/* MainLayout css */
+.navbar-brand {
+    color: #3E3C32; /* Text color for Nav-bar*/
+}
+
+.page {
+    background-color: #758456; /* Main page color */
+}
+
+.nav-scrollable {
+    background: linear-gradient(to bottom, #A3A77E, #5C6140); /* Sidebar color #A3A77E */
+}
+
+/* Note visual css */
+=======
+>>>>>>> Stashed changes
 .note-list {
     list-style: none;
     padding: 0;
 }
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> 361e7ae66fb296cd97db7f341c68ca0f07a4909c
+>>>>>>> Stashed changes
 .note {
     display: flex;
     justify-content: space-between;
@@ -126,10 +155,17 @@ ul {
     white-space: normal; /* Allow text to wrap */
     max-width: 100%; /* Ensure the width doesn't cause overflow */
     min-height: 50px; /* Ensure notes have a consistent height */
+    background-color: #E2DCC5; /* Note base color */
+    color: #3E3C32; /* Text base color */
 }
 
     .note:hover {
-        background-color: #f0f0f0;
+        background-color: #3E3C32;
+        color: #E2DCC5;
+    }
+
+    .note:active {
+        cursor: grabbing;
     }
 
     .note:active {
@@ -181,6 +217,7 @@ ul {
     list-style: none;
     padding: 0;
     margin: 0;
+    background-color: #3E3C32;
 }
 
 .folder-item {
@@ -273,49 +310,6 @@ ul {
 }
 
 
-/*ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-.note {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    transition: background-color 0.3s ease;
-    position: relative;*/ /* So we can position the delete button relative to the list item */
-    /*width: 100%;*/ /* Ensures it takes up the full width of the parent */
-    /*box-sizing: border-box;*/ /* Includes padding in the total width */
-    /*word-wrap: break-word;*/ /* Ensures long words break and wrap onto the next line */
-/*}
-
-    .note:hover {
-        background-color: #f0f0f0;*/ /* Change the background color on hover */
-    /*}
-
-.delete-button {
-    visibility: hidden;*/ /* Initially hidden */
-    /*opacity: 0;*/ /* Ensure it's not visible */
-    /*transition: visibility 0s, opacity 0.3s ease;*/ /* Smooth transition */
-    /*padding: 5px 10px;
-    background-color: red;
-    color: white;
-    border: none;
-    cursor: pointer;
-    position: absolute;
-    right: 10px;
-}
-
-.note:hover .delete-button {
-    visibility: visible;
-    opacity: 1;*/ /* Show the delete button on hover */
-/*}
-
-.delete-button:hover {
-    background-color: darkred;
-}*/
 
 @supports (-webkit-touch-callout: none) {
     .status-bar-safe-area {
