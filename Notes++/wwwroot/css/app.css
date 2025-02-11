@@ -94,9 +94,6 @@ ul {
     margin-top: 10px;
 }
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
 .navbar-toggler {
     background-color: #0056b3;
 }
@@ -115,17 +112,11 @@ ul {
 }
 
 /* Note visual css */
-=======
->>>>>>> Stashed changes
 .note-list {
     list-style: none;
     padding: 0;
 }
 
-<<<<<<< Updated upstream
-=======
->>>>>>> 361e7ae66fb296cd97db7f341c68ca0f07a4909c
->>>>>>> Stashed changes
 .note {
     display: flex;
     justify-content: space-between;
