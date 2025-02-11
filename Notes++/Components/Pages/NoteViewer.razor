@@ -3,13 +3,7 @@
 @inject FolderService FolderService
 @inject LayoutService LayoutService
 @inject NavigationManager Navigation
-
-<div class="dropdown">
-    <button class="dropbtn" @onclick="ToggleDropdown">New Note Page</button>
-    <div class="dropdown-content" style="@(isOpen ? "display: block;" : "display: none;")">
-        <button @onclick="CreateBasicNotePage">Create New Basic Note Page</button>
-    </div>
-</div>
+@inject IJSRuntime JSRuntime
 
 <div class="input-container">
     <input @bind="newNote" @oninput="OnSearchInput" @onkeydown="HandleKeyPress" placeholder="Search or write a note..." />
@@ -18,15 +12,13 @@
 <ul>
     @foreach (var note in filteredNotes)
     {
-        <li class="note" 
-            @key="note"
-            @onpointerdown="(e) => OnNoteDragStart(e, note)"
-            @onpointermove="(e) => OnNoteDragMove(e, note)"
-            @onpointerup="(e) => OnNoteDragEnd(e, note)">
-            <span class="note-text">@note</span>
+        <li class="note"
+            @onmousedown="(e) => OnDragStart(e, note)"
+            @ondrop="(e) => OnDrop(e, note)">
+            <span class="note-text">@note.Content</span>
             <div class="buttons">
                 <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
-                <button class="delete-button" @onclick="() => DeleteNote(note)">Delete</button>
+                <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
             </div>
         </li>
     }
@@ -36,14 +28,13 @@
     [Parameter] public string folderName { get; set; }
     [Parameter] public string fileName { get; set; }
 
-    private List<string> notes = new();
-    private List<string> filteredNotes = new();
+    private List<Note> notes = new();
+    private List<Note> filteredNotes = new();
     private string newNote = "";
     private string currentNoteToEdit = null;
     private string addOrEditButtonText = "Add Note";
-    private bool isOpen = false;
 
-    private string draggedNote = null; // The note being dragged
+    private Note draggedNote = null;  // The note being dragged
     private int dragStartIndex = -1; // Index of the note being dragged
 
     protected override void OnInitialized()
@@ -53,8 +44,6 @@
             LoadFile(); // Load the file content
         }
     }
-
-    private void ToggleDropdown() => isOpen = !isOpen;
 
     void OnSearchInput(ChangeEventArgs e)
     {
@@ -67,67 +56,77 @@
         if (e.Key == "Enter") AddNoteOrEditNote();
     }
 
-    void AddNoteOrEditNote()
+void AddNoteOrEditNote()
+{
+    if (!string.IsNullOrWhiteSpace(newNote))
     {
-        if (!string.IsNullOrWhiteSpace(newNote))
+        if (!string.IsNullOrEmpty(currentNoteToEdit))
         {
-            if (currentNoteToEdit != null)
+            // Edit existing note by Id
+            var noteToEdit = notes.FirstOrDefault(n => n.Id.ToString() == currentNoteToEdit);
+            if (noteToEdit != null)
             {
-                int index = notes.IndexOf(currentNoteToEdit);
-                notes[index] = newNote;
-                currentNoteToEdit = null;
-                addOrEditButtonText = "Add Note";
+                noteToEdit.Content = newNote;  // Update the content of the note
+                currentNoteToEdit = null;  // Reset edit context
+                addOrEditButtonText = "Add Note";  // Reset button text
             }
-            else
-            {
-                notes.Add(newNote);
-            }
-            newNote = "";
-            SaveFile();
-            FilterNotes();
         }
-    }
+        else
+        {
+            // Add new note
+            notes.Add(new Note(newNote));  // Add a new note with a unique ID
+        }
 
-    void LoadFile()
+        newNote = "";
+        SaveFile();
+        FilterNotes();
+    }
+}
+
+void LoadFile()
+{
+    try
     {
-        try
+        if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
         {
-            if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
-            {
-                fileName += ".txt";
-            }
-
-            var content = FolderService.ReadFileContent(folderName, fileName);
-            if (content == null)
-            {
-                Console.WriteLine("File content is empty or null.");
-            }
-            else
-            {
-                Console.WriteLine($"File content loaded: {content.Length} characters.");
-            }
-
-            notes = string.IsNullOrWhiteSpace(content) ? new List<string>() : new List<string>(content.Split('\n'));
-            FilterNotes();
+            fileName += ".txt";
         }
-        catch (Exception ex)
+
+        var content = FolderService.ReadFileContent(folderName, fileName);
+        if (content == null)
         {
-            Console.WriteLine($"Error loading file: {ex.Message}");
+            Console.WriteLine("File content is empty or null.");
         }
+        else
+        {
+            Console.WriteLine($"File content loaded: {content.Length} characters.");
+        }
+
+        notes = string.IsNullOrWhiteSpace(content) ? new List<Note>() : content.Split('\n')
+                .Select(line => new Note(line))  // Create Note objects
+                .ToList();
+        FilterNotes();
     }
-
-
-    void SaveFile()
+    catch (Exception ex)
     {
-        try
-        {
-            FolderService.SaveFileContent(folderName, fileName, string.Join("\n", notes));
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error saving file: {ex.Message}");
-        }
+        Console.WriteLine($"Error loading file: {ex.Message}");
     }
+}
+
+
+
+void SaveFile()
+{
+    try
+    {
+        FolderService.SaveFileContent(folderName, fileName, string.Join("\n", notes.Select(n => n.Content)));  // Save the content of each note
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error saving file: {ex.Message}");
+    }
+}
+
 
 
     void FilterNotes()
@@ -135,7 +134,7 @@
         try
         {
             filteredNotes = string.IsNullOrEmpty(newNote) ? notes :
-                notes.Where(n => n.Contains(newNote, StringComparison.OrdinalIgnoreCase)).ToList();
+                notes.Where(n => n.Content.Contains(newNote, StringComparison.OrdinalIgnoreCase)).ToList();
 
             Console.WriteLine($"Filtered notes count: {filteredNotes.Count}");
         }
@@ -145,55 +144,52 @@
         }
     }
 
+void EditNote(Note note)
+{
+    // Set the currentNoteToEdit to the Id of the note being edited
+    currentNoteToEdit = note.Id.ToString();
+    newNote = note.Content;
+    addOrEditButtonText = "Save Changes"; // Change button text to "Save Changes"
+}
 
-    void EditNote(string note)
+void DeleteNote(Guid noteId)
+{
+    var noteToDelete = notes.FirstOrDefault(n => n.Id == noteId);
+    if (noteToDelete != null)
     {
-        newNote = note;
-        currentNoteToEdit = note;
-        addOrEditButtonText = "Save Changes";
-    }
-
-    void DeleteNote(string note)
-    {
-        notes.Remove(note);
+        notes.Remove(noteToDelete);
+        // FilterNotes();
         SaveFile();
-        FilterNotes();
     }
+}
 
-    void CreateBasicNotePage()
+private async Task OnDragOver(DragEventArgs e)
     {
-        Navigation.NavigateTo($"/note/{folderName}/NewNote{DateTime.Now.Ticks}");
+        // Call the JavaScript function to prevent default behavior
+        await JSRuntime.InvokeVoidAsync("preventDragDefault", e);
     }
 
-    // Start dragging a note
-    void OnNoteDragStart(PointerEventArgs e, string note)
+void OnDragStart(MouseEventArgs e, Note note)
+{
+    draggedNote = note; // Store the dragged note
+}
+
+void OnDrop(DragEventArgs e, Note targetNote)
+{
+    if (draggedNote != null && draggedNote != targetNote)
     {
-        draggedNote = note;
-        dragStartIndex = notes.IndexOf(note);
+        // Get the indexes of the dragged note and the target note
+        int draggedIndex = notes.IndexOf(draggedNote);
+        int targetIndex = notes.IndexOf(targetNote);
+
+        // Remove the dragged note from its original position
+        notes.RemoveAt(draggedIndex);
+
+        // Insert the dragged note at the new position
+        notes.Insert(targetIndex, draggedNote);
+
+        SaveFile(); // Save the updated order
+        FilterNotes(); // Reapply filter after reordering
     }
-
-    // Move the dragged note (optional UI effect can be added)
-    void OnNoteDragMove(PointerEventArgs e, string note)
-    {
-        // Here you could visually show the note being dragged, if desired.
-    }
-
-    // Drop the note to reorder
-    void OnNoteDragEnd(PointerEventArgs e, string targetNote)
-    {
-        if (draggedNote != null && draggedNote != targetNote)
-        {
-            int targetIndex = notes.IndexOf(targetNote);
-            // Remove the dragged note and insert it at the target position
-            notes.Remove(draggedNote);
-            notes.Insert(targetIndex, draggedNote);
-
-            SaveFile(); // Save the updated order to the file
-            FilterNotes(); // Refresh the displayed notes list
-        }
-
-        // Reset after drag ends
-        draggedNote = null;
-        dragStartIndex = -1;
-    }
+}
 }
