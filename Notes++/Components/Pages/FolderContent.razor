@@ -82,18 +82,19 @@
 
         if (fileBeingEdited == null)
         {
-            FolderService.CreateFileInFolder(folderName, newFileName);
-
-        } else
+            FolderService.CreateFileInFolder(folderName, $"{newFileName} - N");
+        }
+        else
         {
 
-            FolderService.UpdateFileName(folderName, fileBeingEdited, newFileName);
+            FolderService.UpdateFileName(folderName, fileBeingEdited, $"{newFileName} - N");
             fileBeingEdited = null; 
         }
 
         files = FolderService.GetFilesInFolder(folderName);
         newFileName = string.Empty;
         ButtonText = "Create File";
+        LayoutService.Format = LayoutService.EFormat.NUMBERED;
     }
 
 
