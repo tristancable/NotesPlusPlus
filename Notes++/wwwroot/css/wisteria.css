@@ -187,26 +187,6 @@ ul {
 
 .folder-item {
     margin: 10px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    transition: background-color 0.3s ease;
-    position: relative;
-    width: 100%;
-    box-sizing: border-box;
-    word-wrap: break-word;
-    overflow: hidden; /* Prevent scrollbars */
-    white-space: normal; /* Allow text to wrap */
-    max-width: 100%; /* Ensure the width doesn't cause overflow */
-    min-height: 50px; /* Ensure notes have a consistent height */
-
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Styling for folder links */
@@ -216,37 +196,23 @@ ul {
     font-size: 1.4em;
     display: flex;
     align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
-.folder-text {
-    flex-grow: 1;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: normal; /* Ensure the text wraps and doesn't overflow */
-}
-
-
-
-
 
     /* Hover effect for folder links */
-    .folder-item:hover {
+    .folder-link:hover {
         background-color: #e6f7ff; /* Light background when hovered */
         color: #0056b3; /* Darker blue when hovered */
     }
-
-.folder-item:hover .buttons {
-    visibility: visible;
-    opacity: 1;
-}
 
 /* Icon styling */
 .folder-icon {
     margin-right: 12px;
     font-size: 1.8em;
 }
-
-
 
 /* Styling for the folder creation input and button */
 .creation-button {
@@ -284,19 +250,7 @@ ul {
 }
 
 .file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    transition: background-color 0.3s ease;
-    position: relative;
-    width: 100%;
-    box-sizing: border-box;
-    word-wrap: break-word;
-    overflow: hidden; /* Prevent scrollbars */
-    white-space: normal; /* Allow text to wrap */
-    max-width: 100%; /* Ensure the width doesn't cause overflow */
-    min-height: 50px; /* Ensure notes have a consistent height */
+    margin: 10px 0;
 }
 
 .file-link {
@@ -307,27 +261,13 @@ ul {
     align-items: center;
     padding: 8px;
     border-radius: 5px;
-    flex-grow: 1; /* Allows the link to take available space, pushing the buttons to the right */
+    transition: all 0.3s ease;
 }
 
-.file-text {
-    flex-grow: 1;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: normal; /* Ensure the text wraps and doesn't overflow */
-}
-
-
-
-    .file-item:hover {
+    .file-link:hover {
         background-color: #f0f8ff; /* Light blue background on hover */
         color: #0056b3; /* Darker blue when hovered */
     }
-
-.file-item:hover .buttons {
-    visibility: visible;
-    opacity: 1;
-}
 
 .file-icon {
     margin-right: 10px;

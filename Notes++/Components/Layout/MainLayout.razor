@@ -17,3 +17,15 @@
         </article>
     </main>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        LayoutService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        LayoutService.OnChange -= StateHasChanged;
+    }
+}

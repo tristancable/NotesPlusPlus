@@ -3,13 +3,7 @@
 @inject FolderService FolderService
 @inject LayoutService LayoutService
 @inject NavigationManager Navigation
-
-<div class="dropdown">
-    <button class="dropbtn" @onclick="ToggleDropdown">New Note Page</button>
-    <div class="dropdown-content" style="@(isOpen ? "display: block;" : "display: none;")">
-        <button @onclick="CreateBasicNotePage">Create New Basic Note Page</button>
-    </div>
-</div>
+@inject IJSRuntime JSRuntime
 
 <div class="input-container">
     <input @bind="newNote" @oninput="OnSearchInput" @onkeydown="HandleKeyPress" placeholder="Search or write a note..." />
@@ -18,11 +12,14 @@
 <ul>
     @foreach (var note in filteredNotes)
     {
+        var index = filteredNotes.IndexOf(note);
         <li class="note">
-            <span class="note-text">@note</span>
+            <span class="note-text">@note.Content</span>
             <div class="buttons">
+                <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
+                <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
                 <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
-                <button class="delete-button" @onclick="() => DeleteNote(note)">Delete</button>
+                <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
             </div>
         </li>
     }
@@ -32,23 +29,27 @@
     [Parameter] public string folderName { get; set; }
     [Parameter] public string fileName { get; set; }
 
-    private List<string> notes = new();
-    private List<string> filteredNotes = new();
+    private List<Note> notes = new();
+    private List<Note> filteredNotes = new();
     private string newNote = "";
     private string currentNoteToEdit = null;
     private string addOrEditButtonText = "Add Note";
-    private bool isOpen = false;
+
+    protected override void OnParametersSet()
+    {
+        LayoutService.PageTitle = $"/{folderName}/{fileName}";
+    }
 
     protected override void OnInitialized()
     {
-        // This will be called when the page is first initialized
         if (!string.IsNullOrWhiteSpace(folderName) && !string.IsNullOrWhiteSpace(fileName))
         {
+            if (fileName.EndsWith(" - B")) LayoutService.Format = LayoutService.EFormat.BULLETPOINT;
+            else if (fileName.EndsWith(" - N")) LayoutService.Format = LayoutService.EFormat.NUMBERED;
+            else LayoutService.Format = LayoutService.EFormat.BASIC;
             LoadFile(); // Load the file content
         }
     }
-
-    private void ToggleDropdown() => isOpen = !isOpen;
 
     void OnSearchInput(ChangeEventArgs e)
     {
@@ -65,67 +66,176 @@
     {
         if (!string.IsNullOrWhiteSpace(newNote))
         {
-            if (currentNoteToEdit != null)
+            if (!string.IsNullOrEmpty(currentNoteToEdit))
             {
-                int index = notes.IndexOf(currentNoteToEdit);
-                notes[index] = newNote;
-                currentNoteToEdit = null;
-                addOrEditButtonText = "Add Note";
+                // Edit existing note by Id
+                var noteToEdit = notes.FirstOrDefault(n => n.Id.ToString() == currentNoteToEdit);
+                if (noteToEdit != null)
+                {
+                    switch (LayoutService.Format) // Update the content of the note
+                    {
+                        case LayoutService.EFormat.BULLETPOINT:
+                            noteToEdit.Content = $"• {newNote}";
+                            break;
+                        case LayoutService.EFormat.NUMBERED:
+                            noteToEdit.Content = $"{LayoutService.EditNumber}. {newNote}";
+                            break;
+                        default:
+                            noteToEdit.Content = newNote;
+                            break;
+                    }
+                    currentNoteToEdit = null;  // Reset edit context
+                    addOrEditButtonText = "Add Note";  // Reset button text
+                }
             }
             else
             {
-                notes.Add(newNote);
+                switch (LayoutService.Format) // Add new note
+                {
+                    case LayoutService.EFormat.BULLETPOINT:
+                        notes.Add(new Note($"• {newNote}"));
+                        break;
+                    case LayoutService.EFormat.NUMBERED:
+                        notes.Add(new Note($"{notes.Count() + 1}. {newNote}"));
+                        break;
+                    default:
+                        notes.Add(new Note(newNote)); // Add a new note with a unique ID
+                        break;
+                }
             }
+
             newNote = "";
             SaveFile();
             FilterNotes();
         }
     }
 
-    // This is the method that loads the file content
     void LoadFile()
     {
-        if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+        try
         {
-            fileName += ".txt";
+            if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                fileName += ".txt";
+            }
+
+            var content = FolderService.ReadFileContent(folderName, fileName);
+            if (content == null)
+            {
+                Console.WriteLine("File content is empty or null.");
+            }
+            else
+            {
+                Console.WriteLine($"File content loaded: {content.Length} characters.");
+            }
+
+            notes = string.IsNullOrWhiteSpace(content) ? new List<Note>() : content.Split('\n')
+                    .Select(line => new Note(line))  // Create Note objects
+                    .ToList();
+            FilterNotes();
         }
-
-        var content = FolderService.ReadFileContent(folderName, fileName);
-        Console.WriteLine($"Reading from: {folderName}/{fileName}");
-        Console.WriteLine($"File Content: {content}");
-
-        notes = string.IsNullOrWhiteSpace(content) ? new List<string>() : new List<string>(content.Split('\n'));
-        FilterNotes();
-        StateHasChanged(); // Ensure UI updates after loading file
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading file: {ex.Message}");
+        }
     }
 
     void SaveFile()
     {
-        FolderService.SaveFileContent(folderName, fileName, string.Join("\n", notes));
+        try
+        {
+            FolderService.SaveFileContent(folderName, fileName, string.Join("\n", notes.Select(n => n.Content)));  // Save the content of each note
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving file: {ex.Message}");
+        }
     }
 
     void FilterNotes()
     {
-        filteredNotes = string.IsNullOrEmpty(newNote) ? notes :
-            notes.Where(n => n.Contains(newNote, StringComparison.OrdinalIgnoreCase)).ToList();
+        try
+        {
+            filteredNotes = string.IsNullOrEmpty(newNote) ? notes :
+                notes.Where(n => n.Content.Contains(newNote, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            Console.WriteLine($"Filtered notes count: {filteredNotes.Count}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error filtering notes: {ex.Message}");
+        }
     }
 
-    void EditNote(string note)
+    void EditNote(Note note)
     {
-        newNote = note;
-        currentNoteToEdit = note;
-        addOrEditButtonText = "Save Changes";
+        // Set the currentNoteToEdit to the Id of the note being edited
+        currentNoteToEdit = note.Id.ToString();
+        switch (LayoutService.Format)
+        {
+            case LayoutService.EFormat.BULLETPOINT:
+                newNote = note.Content.Substring(2);
+                break;
+            case LayoutService.EFormat.NUMBERED:
+                int editNumber;
+                int.TryParse(note.Content.Substring(0, 1), out editNumber);
+                LayoutService.EditNumber = editNumber;
+                newNote = note.Content.Substring(2);
+                break;
+            default:
+                newNote = note.Content;
+                break;
+        }
+        addOrEditButtonText = "Save Changes"; // Change button text to "Save Changes"
     }
 
-    void DeleteNote(string note)
+    void DeleteNote(Guid noteId)
     {
-        notes.Remove(note);
-        SaveFile();
-        FilterNotes();
+        var noteToDelete = notes.FirstOrDefault(n => n.Id == noteId);
+        if (noteToDelete != null)
+        {
+            notes.Remove(noteToDelete);
+            ReorderNumbers();
+            SaveFile();
+        }
     }
 
-    void CreateBasicNotePage()
+    void MoveNoteUp(int index)
     {
-        Navigation.NavigateTo($"/note/{folderName}/NewNote{DateTime.Now.Ticks}");
+        if (index > 0)
+        {
+            var temp = filteredNotes[index];
+            filteredNotes[index] = filteredNotes[index - 1];
+            filteredNotes[index - 1] = temp;
+            ReorderNumbers();
+            SaveFile();
+            FilterNotes();
+        }
+    }
+
+    void MoveNoteDown(int index)
+    {
+        if (index < filteredNotes.Count - 1)
+        {
+            var temp = filteredNotes[index];
+            filteredNotes[index] = filteredNotes[index + 1];
+            filteredNotes[index + 1] = temp;
+            ReorderNumbers();
+            SaveFile();
+            FilterNotes();
+        }
+    }
+
+    void ReorderNumbers()
+    {
+        if (LayoutService.Format == LayoutService.EFormat.NUMBERED)
+            {
+                for (int i = 0; i < notes.Count(); i++)
+                {
+                    var s = notes[i].Content.Length;
+                    string n = notes[i].Content.Substring(1, notes[i].Content.Length - 1);
+                    notes[i].Content = $"{i + 1}{n}";
+                }
+            }
     }
 }

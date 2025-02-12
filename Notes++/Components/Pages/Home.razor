@@ -1,9 +1,8 @@
 ﻿@page "/"
 @using Notes__.Utilities
 @inject FolderService FolderService
+@inject LayoutService LayoutService
 @inject IJSRuntime JS
-
-<h3>Folders</h3>
 
 <div class="creation-button">
     <input @bind="newFolderName" placeholder="Enter folder name" />
@@ -36,9 +35,9 @@
     private string? folderBeingEdited = null;
     private string ButtonText = "Create New Folder";
 
-    // Load folders on page initialization
     protected override void OnInitialized()
     {
+        LayoutService.PageTitle = "Your Folders";
         folders = FolderService.GetFolders();
     }
 

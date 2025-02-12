@@ -4,14 +4,14 @@
 @inject LayoutService LayoutService
 @inject IJSRuntime JS
 
-
-
 <h3>@folderName Folder</h3>
 
 <div>
     <div class="creation-button">
         <input @bind="newFileName" placeholder="Enter file name" />
-        <button @onclick="CreateFile">@ButtonText</button>
+        <button @onclick="CreateBasicFile">Create Basic File</button>
+        <button @onclick="CreateBulletpointFile">Create Bulletpoint File</button>
+        <button @onclick="CreateNumberedFile">Create Numbered File</button>
     </div>
 
     <ul class="file-list">
@@ -50,18 +50,33 @@
 
     protected override void OnParametersSet()
     {
-        // Update the title to reflect the folder name
-        LayoutService.PageTitle = folderName;
-
+        LayoutService.PageTitle = $"/{folderName}";
         files = FolderService.GetFilesInFolder(folderName);
     }
 
-    protected override void OnInitialized()
+    private void CreateBasicFile()
     {
-        files = FolderService.GetFilesInFolder(folderName);
+        if (!string.IsNullOrWhiteSpace(newFileName))
+        {
+            FolderService.CreateFileInFolder(folderName, newFileName);
+            files = FolderService.GetFilesInFolder(folderName);
+            newFileName = string.Empty;
+            LayoutService.Format = LayoutService.EFormat.BASIC;
+        }
     }
 
-    private void CreateFile()
+    private void CreateBulletpointFile()
+    {
+        if (!string.IsNullOrWhiteSpace(newFileName))
+        {
+            FolderService.CreateFileInFolder(folderName, $"{newFileName} - B");
+            files = FolderService.GetFilesInFolder(folderName);
+            newFileName = string.Empty;
+            LayoutService.Format = LayoutService.EFormat.BULLETPOINT;
+        }
+    }
+
+    private void CreateNumberedFile()
     {
         if (string.IsNullOrWhiteSpace(newFileName)) return;
 
