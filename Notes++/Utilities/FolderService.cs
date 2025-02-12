@@ -116,5 +116,94 @@ namespace Notes__.Utilities
             File.WriteAllText(filePath, content);
         }
 
+
+        public void DeleteFile(string folderName, string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName)) return;
+
+            if (!fileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                fileName += ".txt";
+            }
+
+            string filePath = Path.Combine(basePath, folderName, fileName);
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+                Console.WriteLine($"✅ File deleted: {filePath}");
+            }
+            else
+            {
+                Console.WriteLine($"⚠️ File not found: {filePath}");
+            }
+        }
+
+        // 🔄 UPDATE FILE NAME METHOD
+        public void UpdateFileName(string folderName, string oldFileName, string newFileName)
+        {
+            if (string.IsNullOrWhiteSpace(oldFileName) || string.IsNullOrWhiteSpace(newFileName)) return;
+
+            if (!oldFileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                oldFileName += ".txt";
+            }
+
+            if (!newFileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                newFileName += ".txt";
+            }
+
+            string oldFilePath = Path.Combine(basePath, folderName, oldFileName);
+            string newFilePath = Path.Combine(basePath, folderName, newFileName);
+
+            if (File.Exists(oldFilePath))
+            {
+                File.Move(oldFilePath, newFilePath);
+                Console.WriteLine($"✅ File renamed from {oldFileName} to {newFileName}");
+            }
+            else
+            {
+                Console.WriteLine($"⚠️ File not found: {oldFileName}");
+            }
+        }
+
+
+        public void DeleteFolder(string folderName)
+        {
+            if (string.IsNullOrWhiteSpace(folderName)) return;
+
+            string folderPath = Path.Combine(basePath, folderName);
+
+            if (Directory.Exists(folderPath))
+            {
+                Directory.Delete(folderPath, true); // `true` ensures it deletes non-empty folders
+                Console.WriteLine($"✅ Folder deleted: {folderPath}");
+            }
+            else
+            {
+                Console.WriteLine($"⚠️ Folder not found: {folderPath}");
+            }
+        }
+
+        public void UpdateFolderName(string oldFolderName, string newFolderName)
+        {
+            if (string.IsNullOrWhiteSpace(oldFolderName) || string.IsNullOrWhiteSpace(newFolderName)) return;
+
+            string oldFolderPath = Path.Combine(basePath, oldFolderName);
+            string newFolderPath = Path.Combine(basePath, newFolderName);
+
+            if (Directory.Exists(oldFolderPath))
+            {
+                Directory.Move(oldFolderPath, newFolderPath);
+                Console.WriteLine($"✅ Folder renamed from {oldFolderName} to {newFolderName}");
+            }
+            else
+            {
+                Console.WriteLine($"⚠️ Folder not found: {oldFolderName}");
+            }
+        }
+
+
     }
 }

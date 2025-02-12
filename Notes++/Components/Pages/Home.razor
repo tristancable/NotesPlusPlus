@@ -1,24 +1,31 @@
 ﻿@page "/"
 @using Notes__.Utilities
 @inject FolderService FolderService
+@inject IJSRuntime JS
 
 <h3>Folders</h3>
 
 <div class="creation-button">
     <input @bind="newFolderName" placeholder="Enter folder name" />
-    <button @onclick="CreateFolder">Create New Folder</button>
+    <button @onclick="CreateFolder">@ButtonText</button>
 </div>
 
 <ul class="folder-list">
     @foreach (var folderName in folders)
     {
         <li class="folder-item">
+            <span class="folder-text">
             <a href="@($"/folder/{folderName}")" class="folder-link">
                 <i class="folder-icon">
                 <i class="bi bi-folder"></i>
                 </i>
                 @folderName
             </a>
+            </span>
+            <div class="buttons">
+                <button class="edit-button" @onclick="() => RenameFolder(folderName)">Edit</button>
+                    <button class="delete-button" @onclick="() => DeleteFolder(folderName)">Delete</button>
+            </div>
         </li>
     }
 </ul>
@@ -26,6 +33,8 @@
 @code {
     private List<string> folders = new();
     private string newFolderName = string.Empty;
+    private string? folderBeingEdited = null;
+    private string ButtonText = "Create New Folder";
 
     // Load folders on page initialization
     protected override void OnInitialized()
@@ -35,11 +44,48 @@
 
     private void CreateFolder()
     {
-        if (!string.IsNullOrWhiteSpace(newFolderName))
+
+        if (string.IsNullOrWhiteSpace(newFolderName)) return;
+
+        if (folderBeingEdited == null)
         {
             FolderService.CreateFolder(newFolderName);
-            folders = FolderService.GetFolders(); // Refresh folders
-            newFolderName = string.Empty; // Clear input field
+
+        }
+        else
+        {
+
+            FolderService.UpdateFolderName(folderBeingEdited, newFolderName);
+            folderBeingEdited = null;
+        }
+
+        folders = FolderService.GetFolders(); // Refresh folders    
+        newFolderName = string.Empty;
+        ButtonText = "Create New Folder";
+
+    }
+
+
+    private void RenameFolder(string folderName)
+    {
+        newFolderName = folderName;
+        folderBeingEdited = folderName;
+        ButtonText = "Save Changes";
+    }
+
+    async Task DeleteFolder(string folder)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("showConfirm", "Are you sure you want to delete this folder?");
+        if (confirmed)
+        {
+            ConfirmedDelete(folder);
         }
     }
+
+    private void ConfirmedDelete(string folder)
+    {
+        FolderService.DeleteFolder(folder);
+        folders = FolderService.GetFolders(); // Refresh the folder list
+    }
+
 }

@@ -2,13 +2,16 @@
 @using Notes__.Utilities
 @inject FolderService FolderService
 @inject LayoutService LayoutService
+@inject IJSRuntime JS
+
+
 
 <h3>@folderName Folder</h3>
 
 <div>
     <div class="creation-button">
         <input @bind="newFileName" placeholder="Enter file name" />
-        <button @onclick="CreateFile">Create File</button>
+        <button @onclick="CreateFile">@ButtonText</button>
     </div>
 
     <ul class="file-list">
@@ -16,15 +19,24 @@
         {
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file);
             <li class="file-item">
-                <a href="@($"/note/{folderName}/{fileNameWithoutExtension}")" class="file-link">
-                    <i class="file-icon">
-                        <i class="bi bi-file-earmark-text"></i>
-                    </i>
-                    @fileNameWithoutExtension
-                </a>
+                <span class="file-text">
+                    <a href="@($"/note/{folderName}/{fileNameWithoutExtension}")" class="file-link">
+                        <i class="file-icon">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </i>
+                        @fileNameWithoutExtension
+                    </a>
+                </span>
+                <div class="buttons">
+                    <button class="edit-button" @onclick="() => RenameFile(file)">Edit</button>
+                    <button class="delete-button" @onclick="() => DeleteFile(file)">Delete</button>
+                </div>
             </li>
         }
     </ul>
+
+
+
 </div>
 
 @code {
@@ -32,6 +44,9 @@
 
     private List<string> files = new();
     private string newFileName = string.Empty;
+    private string? fileBeingEdited = null;
+    private string ButtonText = "Create File";
+
 
     protected override void OnParametersSet()
     {
@@ -48,11 +63,46 @@
 
     private void CreateFile()
     {
-        if (!string.IsNullOrWhiteSpace(newFileName))
+        if (string.IsNullOrWhiteSpace(newFileName)) return;
+
+        if (fileBeingEdited == null)
         {
             FolderService.CreateFileInFolder(folderName, newFileName);
-            files = FolderService.GetFilesInFolder(folderName);
-            newFileName = string.Empty;
+
+        } else
+        {
+
+            FolderService.UpdateFileName(folderName, fileBeingEdited, newFileName);
+            fileBeingEdited = null; 
+        }
+
+        files = FolderService.GetFilesInFolder(folderName);
+        newFileName = string.Empty;
+        ButtonText = "Create File";
+    }
+
+
+    private void RenameFile(string fileName) 
+    {
+        newFileName = fileName;
+        fileBeingEdited = fileName;
+        ButtonText = "Save Changes";
+    }
+    
+
+    async Task DeleteFile(string fileName) 
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("showConfirm", "Are you sure you want to delete this file?");
+        if (confirmed)
+        {
+            ConfirmedDelete(fileName);
         }
     }
+
+    private void ConfirmedDelete(string file)
+    {
+        FolderService.DeleteFile(folderName, file);
+        files = FolderService.GetFilesInFolder(folderName);
+    }
+
 }

@@ -7,3 +7,7 @@
 
     return folderPath;  // Return the folder name or path
 };
+
+window.showConfirm = (message) => {
+    return confirm(message);
+};
