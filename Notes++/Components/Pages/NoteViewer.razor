@@ -8,20 +8,69 @@
 <div class="input-container">
     <input @bind="newNote" @oninput="OnSearchInput" @onkeydown="HandleKeyPress" placeholder="Search or write a note..." />
 </div>
+<div>
+    <button @onclick="() => toggleBold()"><strong>B</strong></button>
+    <button @onclick="() => toggleItalic()"><i>I</i></button>
+</div>
 
 <ul>
     @foreach (var note in filteredNotes)
     {
-        var index = filteredNotes.IndexOf(note);
-        <li class="note">
-            <span class="note-text">@note.Content</span>
-            <div class="buttons">
-                <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
-                <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
-                <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
-                <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
-            </div>
-        </li>
+        @if (bold & italic) 
+        {
+            var index = filteredNotes.IndexOf(note);
+            <li class="note">
+                <span class="note-text"><strong><i>@note.Content</i></strong></span>
+                <div class="buttons">
+                    <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
+                    <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
+                    <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
+                    <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
+                </div>
+            </li>
+        }else
+        {
+            if(bold)
+            {
+                var index = filteredNotes.IndexOf(note);
+                <li class="note">
+                    <span class="note-text"><strong>@note.Content</strong></span>
+                    <div class="buttons">
+                        <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
+                        <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
+                        <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
+                        <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
+                    </div>
+                </li>
+            }else
+            {
+                if (italic)
+                {
+                    var index = filteredNotes.IndexOf(note);
+                        <li class="note">
+                            <span class="note-text"><i>@note.Content</i></span>
+                            <div class="buttons">
+                                <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
+                                <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
+                                <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
+                                <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
+                            </div>
+                        </li>
+                }else
+                {
+                    var index = filteredNotes.IndexOf(note);
+                        <li class="note">
+                            <span class="note-text">@note.Content</span>
+                            <div class="buttons">
+                                <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
+                                <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
+                                <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
+                                <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
+                            </div>
+                         </li>
+                }
+            }
+        }
     }
 </ul>
 
@@ -32,6 +81,8 @@
     private List<Note> notes = new();
     private List<Note> filteredNotes = new();
     private string newNote = "";
+    private bool bold = false;
+    private bool italic = false;
     private string currentNoteToEdit = null;
     private string addOrEditButtonText = "Add Note";
 
@@ -209,6 +260,7 @@
             filteredNotes[index - 1] = temp;
             ReorderNumbers();
             SaveFile();
+            FilterNotes();
         }
     }
 
@@ -221,19 +273,42 @@
             filteredNotes[index + 1] = temp;
             ReorderNumbers();
             SaveFile();
+            FilterNotes();
         }
     }
 
     void ReorderNumbers()
     {
         if (LayoutService.Format == LayoutService.EFormat.NUMBERED)
+        {
+            for (int i = 0; i < notes.Count(); i++)
             {
-                for (int i = 0; i < notes.Count(); i++)
-                {
-                    var s = notes[i].Content.Length;
-                    string n = notes[i].Content.Substring(1, notes[i].Content.Length - 1);
-                    notes[i].Content = $"{i + 1}{n}";
-                }
+                var s = notes[i].Content.Length;
+                string n = notes[i].Content.Substring(1, notes[i].Content.Length - 1);
+                notes[i].Content = $"{i + 1}{n}";
             }
+        }
+    }
+    void toggleBold()
+    {
+        if (bold)
+        {
+            bold = false;
+        }
+        else 
+        {
+            bold = true;
+        }
+    }
+    void toggleItalic()
+    {
+        if (italic)
+        {
+            italic = false;
+        }
+        else
+        {
+            italic = true;
+        }
     }
 }
