@@ -4,7 +4,8 @@
 
 .content {
     padding-top: 1.1rem;
-    background-color: #0056b3;
+/*    background-color: #0056b3;*/
+    background-color: white;
 }
 
 h1:focus {

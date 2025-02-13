@@ -168,7 +168,6 @@ namespace Notes__.Utilities
             }
         }
 
-
         public void DeleteFolder(string folderName)
         {
             if (string.IsNullOrWhiteSpace(folderName)) return;
