@@ -7,7 +7,7 @@
 <div>
     <div class="creation-button">
         <input @bind="newFileName" placeholder="Enter file name" />
-        <button @onclick="CreateBasicFile">Create Basic File</button>
+        <button @onclick="CreateBasicFile">@ButtonText</button>
         <button @onclick="CreateBulletpointFile">Create Bulletpoint File</button>
         <button @onclick="CreateNumberedFile">Create Numbered File</button>
     </div>
@@ -43,7 +43,7 @@
     private List<string> files = new();
     private string newFileName = string.Empty;
     private string? fileBeingEdited = null;
-    private string ButtonText = "Create File";
+    private string ButtonText = "Create Basic File";
 
 
     protected override void OnParametersSet()
@@ -54,14 +54,24 @@
 
     private void CreateBasicFile()
     {
-        if (!string.IsNullOrWhiteSpace(newFileName))
+        if (string.IsNullOrWhiteSpace(newFileName)) return;
+
+        if (fileBeingEdited == null)
         {
             FolderService.CreateFileInFolder(folderName, newFileName);
-            files = FolderService.GetFilesInFolder(folderName);
-            newFileName = string.Empty;
             LayoutService.Format = LayoutService.EFormat.BASIC;
         }
+        else
+        {
+            FolderService.UpdateFileName(folderName, fileBeingEdited, newFileName);
+            fileBeingEdited = null;
+        }
+
+        files = FolderService.GetFilesInFolder(folderName);
+        newFileName = string.Empty;
+        ButtonText = "Create Basic File";
     }
+
 
     private void CreateBulletpointFile()
     {
@@ -117,6 +127,12 @@
     {
         FolderService.DeleteFile(folderName, file);
         files = FolderService.GetFilesInFolder(folderName);
-    }
 
+            // how the heck did this get into my delete method?  v
+
+            // FolderService.CreateFileInFolder(folderName, $"{newFileName} - N");
+            // files = FolderService.GetFilesInFolder(folderName);
+            // newFileName = string.Empty;
+            // LayoutService.Format = LayoutService.EFormat.NUMBERED;
+    }
 }
