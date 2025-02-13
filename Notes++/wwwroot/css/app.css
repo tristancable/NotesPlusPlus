@@ -4,7 +4,6 @@
 
 .content {
     padding-top: 1.1rem;
-/*    background-color: #0056b3;*/
 }
 
 h1:focus {
@@ -102,6 +101,10 @@ ul {
 /* MainLayout css */
 .navbar-brand {
     color: #3E3C32; /* Text color for Nav-bar*/
+}
+
+.nav-scrollable {
+    background: linear-gradient(to bottom, #A3A77E, #5C6140); /* Sidebar color #A3A77E */
 }
 
 /* Note visual css */
