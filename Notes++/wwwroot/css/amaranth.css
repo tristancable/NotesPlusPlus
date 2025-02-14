@@ -199,6 +199,26 @@ ul {
 
 .folder-item {
     margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow: hidden; /* Prevent scrollbars */
+    white-space: normal; /* Allow text to wrap */
+    max-width: 100%; /* Ensure the width doesn't cause overflow */
+    min-height: 50px; /* Ensure notes have a consistent height */
+
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Styling for folder links */
@@ -208,17 +228,30 @@ ul {
     font-size: 1.4em;
     display: flex;
     align-items: center;
-    padding: 10px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .folder-link:hover {
+        color: #49233E;
+    }
+
+.folder-text {
+    flex-grow: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal; /* Ensure the text wraps and doesn't overflow */
 }
 
     /* Hover effect for folder links */
-    .folder-link:hover {
-        background-color: #BC97B2; /* Light background when hovered */
-        color: #49233E; /* Darker blue when hovered */
+.folder-item:hover {
+    background-color: #BC97B2; /* Light background when hovered */
+    color: #49233E; /* Darker blue when hovered */
+}
+
+    .folder-item:hover .buttons {
+        visibility: visible;
+        opacity: 1;
     }
+
 
 /* Icon styling */
 .folder-icon {
@@ -265,6 +298,11 @@ ul {
     margin: 10px 0;
 }
 
+    .file-item:hover {
+        background-color: #BC97B2;
+        color: #49233E;
+    }
+
 .file-link {
     text-decoration: none;
     color: black; /* Light blue for the folder link */
@@ -288,6 +326,15 @@ ul {
 
 .bi bi-arrow-up, bi bi-arrow-down {
     background-color: #F8EEE7;
+}
+
+/* Settings page styling */
+.settingsTitle {
+    color: #3A2D30;
+}
+
+.themeOptions {
+    color: #3A2D30;
 }
 
 

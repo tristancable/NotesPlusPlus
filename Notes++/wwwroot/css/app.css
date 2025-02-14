@@ -103,10 +103,6 @@ ul {
     color: #3E3C32; /* Text color for Nav-bar*/
 }
 
-.nav-scrollable {
-    background: linear-gradient(to bottom, #A3A77E, #5C6140); /* Sidebar color #A3A77E */
-}
-
 /* Note visual css */
 .note-list {
     list-style: none;
@@ -338,6 +334,14 @@ ul {
     font-size: 1.5em;
 }
 
+/* Settings page styling */
+.settingsTitle {
+    color: #3E3C32;
+}
+
+.themeOptions {
+    color: #3E3C32;
+}
 
 
 @supports (-webkit-touch-callout: none) {

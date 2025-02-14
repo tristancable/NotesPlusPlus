@@ -1,10 +1,30 @@
 ﻿@page "/settings"
+@inject IJSRuntime JS
 
-<h3>Settings</h3>
+<h3 class="settingsTitle">Settings</h3>
 
-/* Create a method to swap the css files to change the theme */
-
+<div class="themeOptions">Change Theme</div>
+<select @onchange="ChangeTheme">
+    <option value="css/default.css">Default</option>
+    <option value="css/amaranth.css">Amaranth</option>
+    <option value="css/wisteria.css">Wisteria</option>
+    <option value="css/verdant.css">Verdant</option>
+</select>
 
 @code {
+    private async Task ChangeTheme(ChangeEventArgs e)
+    {
+        var theme = e.Value.ToString();
+        await JS.InvokeVoidAsync("setTheme", theme);
+        await JS.InvokeVoidAsync("saveThemeToSession", theme); // Save theme in session storage
+    }
 
+    protected override async Task OnInitializedAsync()
+    {
+        var theme = await JS.InvokeAsync<string>("getThemeFromSession");
+        if (!string.IsNullOrEmpty(theme))
+        {
+            await JS.InvokeVoidAsync("setTheme", theme);
+        }
+    }
 }
