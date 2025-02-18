@@ -16,3 +16,6 @@ window.saveThemeToSession = (theme) => {
 window.getThemeFromSession = () => {
     return sessionStorage.getItem("selectedTheme") || "css/default.css";
 };
+
+
+// When theme is changed you cannot go back to default until you choose another theme
