@@ -9,8 +9,8 @@
     <input @bind="newNote" @oninput="OnSearchInput" @onkeydown="HandleKeyPress" placeholder="Search or write a note..." />
 </div>
 <div>
-    <button @onclick="() => toggleBold()"><strong>B</strong></button>
-    <button @onclick="() => toggleItalic()"><i>I</i></button>
+    <button @onclick="() => ToggleBold()"><strong>B</strong></button>
+    <button @onclick="() => ToggleItalic()"><i>I</i></button>
 </div>
 
 <ul>
@@ -47,27 +47,27 @@
                 if (italic)
                 {
                     var index = filteredNotes.IndexOf(note);
-                        <li class="note">
-                            <span class="note-text"><i>@note.Content</i></span>
-                            <div class="buttons">
-                                <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
-                                <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
-                                <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
-                                <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
-                            </div>
-                        </li>
+                    <li class="note">
+                        <span class="note-text"><i>@note.Content</i></span>
+                        <div class="buttons">
+                            <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
+                            <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
+                            <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
+                            <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
+                        </div>
+                    </li>
                 }else
                 {
                     var index = filteredNotes.IndexOf(note);
-                        <li class="note">
-                            <span class="note-text">@note.Content</span>
-                            <div class="buttons">
-                                <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
-                                <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
-                                <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
-                                <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
-                            </div>
-                         </li>
+                    <li class="note">
+                        <span class="note-text">@note.Content</span>
+                        <div class="buttons">
+                            <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
+                            <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
+                            <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
+                            <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
+                        </div>
+                    </li>
                 }
             }
         }
@@ -289,7 +289,7 @@
             }
         }
     }
-    void toggleBold()
+    void ToggleBold()
     {
         if (bold)
         {
@@ -300,7 +300,7 @@
             bold = true;
         }
     }
-    void toggleItalic()
+    void ToggleItalic()
     {
         if (italic)
         {
@@ -310,5 +310,10 @@
         {
             italic = true;
         }
+    }
+
+    void CreateSubcategory()
+    {
+        
     }
 }
