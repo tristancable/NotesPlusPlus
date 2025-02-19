@@ -15,8 +15,8 @@
     <button @onclick="() => NewCategory(categoryName)">New Category</button>
 </div>
 <div>
-    <button @onclick="() => toggleBold()"><strong>B</strong></button>
-    <button @onclick="() => toggleItalic()"><i>I</i></button>
+    <button @onclick="() => ToggleBold()"><strong>B</strong></button>
+    <button @onclick="() => ToggleItalic()"><i>I</i></button>
 </div>
 
 <ul>
@@ -178,7 +178,7 @@
             }
 
             var content = FolderService.ReadFileContent(folderName, fileName);
-            if (content == null)
+            if (string.IsNullOrWhiteSpace(content))
             {
                 Console.WriteLine("File content is empty or null.");
             }
@@ -296,7 +296,7 @@
             }
         }
     }
-    void toggleBold()
+    void ToggleBold()
     {
         if (bold)
         {
@@ -307,7 +307,7 @@
             bold = true;
         }
     }
-    void toggleItalic()
+    void ToggleItalic()
     {
         if (italic)
         {
