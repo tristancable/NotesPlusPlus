@@ -86,7 +86,15 @@ h1:focus {
     background: linear-gradient(to bottom, #59314D, #693F5D); /* Sidebar color #A3A77E */
 }
 
+.top-row[b-eovwf8n2vw] { /* Navbar header */
+    background-color: #6495ED;
+}
+
 /* MainLayout css */
+.top-row[b-3azgan5sfe] { /* Main page header */
+    background-color: #4682B4;
+}
+
 .page-title {
     font-size: 1.5rem;
     font-weight: bold;
