@@ -7,6 +7,12 @@
 
 <div class="input-container">
     <input @bind="newNote" @oninput="OnSearchInput" @onkeydown="HandleKeyPress" placeholder="Search or write a note..." />
+
+    <select @onchange="ChangeCategory">
+        <option value="new">None</option>
+        <option value="cat1">Cat1</option>
+    </select>
+    <button @onclick="() => NewCategory(categoryName)">New Category</button>
 </div>
 <div>
     <button @onclick="() => toggleBold()"><strong>B</strong></button>
@@ -47,27 +53,27 @@
                 if (italic)
                 {
                     var index = filteredNotes.IndexOf(note);
-                        <li class="note">
-                            <span class="note-text"><i>@note.Content</i></span>
-                            <div class="buttons">
-                                <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
-                                <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
-                                <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
-                                <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
-                            </div>
-                        </li>
+                    <li class="note">
+                        <span class="note-text"><i>@note.Content</i></span>
+                        <div class="buttons">
+                            <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
+                            <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
+                            <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
+                            <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
+                        </div>
+                    </li>
                 }else
                 {
                     var index = filteredNotes.IndexOf(note);
-                        <li class="note">
-                            <span class="note-text">@note.Content</span>
-                            <div class="buttons">
-                                <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
-                                <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
-                                <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
-                                <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
-                            </div>
-                         </li>
+                    <li class="note">
+                        <span class="note-text">@note.Content</span>
+                        <div class="buttons">
+                            <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
+                            <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
+                            <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
+                            <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
+                        </div>
+                    </li>
                 }
             }
         }
@@ -84,6 +90,7 @@
     private bool bold = false;
     private bool italic = false;
     private string currentNoteToEdit = null;
+    private string currentCategory = null;
     private string addOrEditButtonText = "Add Note";
 
     protected override void OnParametersSet()
@@ -310,5 +317,15 @@
         {
             italic = true;
         }
+    }
+
+    private async Task ChangeCategory(ChangeEventArgs e)
+    {
+        //var category = e.Value.ToString();
+
+    }
+
+    void NewCategory(categoryName) {
+        currentCategory = categoryName;
     }
 }
