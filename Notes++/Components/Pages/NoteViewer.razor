@@ -12,7 +12,7 @@
         <option value="new">None</option>
         <option value="cat1">Cat1</option>
     </select>
-    <button @onclick="() => NewCategory(categoryName)">New Category</button>
+    <button @onclick="() => NewCategory()">New Category</button>
 </div>
 <div>
     <button @onclick="() => ToggleBold()"><strong>B</strong></button>
@@ -325,7 +325,9 @@
 
     }
 
-    void NewCategory(categoryName) {
-        currentCategory = categoryName;
+    void NewCategory() 
+    { //very very basic and lacking
+        currentCategory = newNote;
+        newNote = "";
     }
 }
