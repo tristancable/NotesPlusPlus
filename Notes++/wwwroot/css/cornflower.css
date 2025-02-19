@@ -86,6 +86,10 @@ h1:focus {
     background: linear-gradient(to bottom, #59314D, #693F5D); /* Sidebar color #A3A77E */
 }
 
+.top-row[b-eovwf8n2vw] {
+    background-color: #;
+}
+
 /* MainLayout css */
 .page-title {
     font-size: 1.5rem;
@@ -95,7 +99,6 @@ h1:focus {
 
 .input-container {
     display: flex;
-    flex-direction: column; /* Stack the inputs vertically */
     gap: 10px; /* Space between the inputs */
 }
 
