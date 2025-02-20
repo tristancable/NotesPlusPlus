@@ -80,20 +80,49 @@ h1:focus {
     position: fixed;
     top: 75px;
     display: flex;
-    flex-direction: column; /* Stack the inputs vertically */
     gap: 10px; /* Space between the inputs */
     background: white; /* Scale accordingly with width. height is not useful for our purposes */
     width: 1000px; /* Doesn't change width of the buttons or input. Does change the width of the background */
     z-index: 1000; /* Ensures it stays above other elements */
 }
 
-    .input-container input {
-        width: 25%; /* Make inputs and button take full width */
+
+
+/*           wacc heart input select box stuff         */
+
+input[type="checkbox"] {
+    display: none; /* Hide default checkbox */
+}
+
+label {
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    width: 30px;
+    height: 30px;
+}
+
+    label::before {
+        content: "❤"; /* Heart symbol */
+        font-size: 30px;
+        color: gray;
+        position: absolute;
+        left: 0;
+        top: 0;
+        transition: color 0.3s ease;
     }
 
-    .input-container button {
-        width: 3%; /* Make buttons this width */
-    }
+input[type="checkbox"]:checked + label::before {
+    color: red; /* Change color when checked */
+}
+
+.input-container input {
+    width: 25%; /* Make inputs and button take full width */
+}
+
+.input-container button {
+    width: 3%; /* Make buttons this width */
+}
 
 ul {
     list-style-type: none;
@@ -241,16 +270,16 @@ ul {
 
 
 
-    /* Hover effect for folder links */
-    .folder-item:hover {
-        background-color: #e6f7ff; /* Light background when hovered */
-        color: #0056b3; /* Darker blue when hovered */
-    }
-
-.folder-item:hover .buttons {
-    visibility: visible;
-    opacity: 1;
+/* Hover effect for folder links */
+.folder-item:hover {
+    background-color: #e6f7ff; /* Light background when hovered */
+    color: #0056b3; /* Darker blue when hovered */
 }
+
+    .folder-item:hover .buttons {
+        visibility: visible;
+        opacity: 1;
+    }
 
 /* Icon styling */
 .folder-icon {
@@ -331,15 +360,15 @@ ul {
 
 
 
-    .file-item:hover {
-        background-color: #f0f8ff; /* Light blue background on hover */
-        color: #0056b3; /* Darker blue when hovered */
-    }
-
-.file-item:hover .buttons {
-    visibility: visible;
-    opacity: 1;
+.file-item:hover {
+    background-color: #f0f8ff; /* Light blue background on hover */
+    color: #0056b3; /* Darker blue when hovered */
 }
+
+    .file-item:hover .buttons {
+        visibility: visible;
+        opacity: 1;
+    }
 
 .file-icon {
     margin-right: 10px;

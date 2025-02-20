@@ -26,6 +26,8 @@
                     </a>
                 </span>
                 <div class="buttons">
+                    <input type="checkbox" id="heart">
+                    <label for="heart"></label>
                     <button class="edit-button" @onclick="() => RenameFile(file)">Edit</button>
                     <button class="delete-button" @onclick="() => DeleteFile(file)">Delete</button>
                 </div>
@@ -41,6 +43,7 @@
     [Parameter] public string folderName { get; set; }
 
     private List<string> files = new();
+    private List<string> pinnedFiles = new();
     private string newFileName = string.Empty;
     private string? fileBeingEdited = null;
     private string ButtonText = "Create Basic File";
