@@ -81,6 +81,37 @@ h1:focus {
     gap: 10px; /* Space between the inputs */
 }
 
+
+
+/*           wacc heart input select box stuff         */
+
+input[type="checkbox"] {
+    display: none; /* Hide default checkbox */
+}
+
+label {
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    width: 30px;
+    height: 30px;
+}
+
+    label::before {
+        content: "❤"; /* Heart symbol */
+        font-size: 30px;
+        color: gray;
+        position: absolute;
+        left: 0;
+        top: 0;
+        transition: color 0.3s ease;
+    }
+
+input[type="checkbox"]:checked + label::before {
+    color: red; /* Change color when checked */
+}
+
+
     .input-container input,
     .input-container button {
         width: 25%; /* Make inputs and button take full width */
