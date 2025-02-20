@@ -7,10 +7,10 @@
 
 <div class="input-container">
     <input @bind="newNote" @oninput="OnSearchInput" @onkeydown="HandleKeyPress" placeholder="Search or write a note..." />
-</div>
-<div>
-    <button @onclick="() => toggleBold()"><strong>B</strong></button>
-    <button @onclick="() => toggleItalic()"><i>I</i></button>
+    <div>
+        <button @onclick="() => toggleBold()"><strong>B</strong></button>
+        <button @onclick="() => toggleItalic()"><i>I</i></button>
+    </div>
 </div>
 
 <ul>

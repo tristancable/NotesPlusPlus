@@ -77,14 +77,22 @@ h1:focus {
 }
 
 .input-container {
+    position: fixed;
+    top: 75px;
     display: flex;
     flex-direction: column; /* Stack the inputs vertically */
     gap: 10px; /* Space between the inputs */
+    background: white; /* Scale accordingly with width. height is not useful for our purposes */
+    width: 1000px; /* Doesn't change width of the buttons or input. Does change the width of the background */
+    z-index: 1000; /* Ensures it stays above other elements */
 }
 
-    .input-container input,
-    .input-container button {
+    .input-container input {
         width: 25%; /* Make inputs and button take full width */
+    }
+
+    .input-container button {
+        width: 3%; /* Make buttons this width */
     }
 
 ul {
@@ -110,6 +118,10 @@ ul {
 }
 
 .note {
+    /*
+        top ensures that no files are hidden behind the search input and buttons
+    */
+    top: 75px;
     display: flex;
     justify-content: space-between;
     align-items: center;
