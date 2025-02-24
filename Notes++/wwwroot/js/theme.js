@@ -14,7 +14,7 @@ window.saveThemeToSession = (theme) => {
 };
 
 window.getThemeFromSession = () => {
-    return sessionStorage.getItem("selectedTheme") || "css/default.css";
+    return sessionStorage.getItem("selectedTheme") || "css/app.css";
 };
 
 
