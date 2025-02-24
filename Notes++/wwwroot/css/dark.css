@@ -61,8 +61,8 @@ h1:focus {
     display: flex;
     align-items: center;
     font-size: 1rem;
-    color: #F8EEE7;
-    background-color: #5E4B51;
+    color: #E0E0E0;
+    background-color: #4A5156;
 }
 
 .navbar-toggler {
@@ -79,26 +79,26 @@ h1:focus {
 }
 
 .navbar-brand {
-    color: #5E4B51; /* Text color for Nav-bar*/
+    color: #E0E0E0; /* Text color for Nav-bar*/
 }
 
 .nav-scrollable {
-    background: linear-gradient(to bottom, #59314D, #693F5D); /* Sidebar color #A3A77E */
+    background: linear-gradient(to bottom, #2A3439, #3A3F44); /* Sidebar color #2A3439 */
 }
 
 .top-row[b-eovwf8n2vw] { /* Navbar header */
-    background-color: #6495ED;
+    background-color: #1C1C1C;
 }
 
 /* MainLayout css */
 .top-row[b-3azgan5sfe] { /* Main page header */
-    background-color: #4682B4;
+    background-color: #434747;
 }
 
 .page-title {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #5E4B51; /* Text color for title */
+    color: #D1D5D8; /* Text color for title */
 }
 
 .input-container {
@@ -119,7 +119,7 @@ ul {
 }
 
 .page {
-    background-color: #A67F9B;
+    background-color: #5A5D61;
 }
 
 /* Note visual css */
@@ -145,8 +145,8 @@ ul {
 }
 
     .note:hover {
-        background-color: #BC97B2; /* Light background when hovered */
-        color: #49233E;
+        background-color: #464A4D; /* Light background when hovered */
+        color: #D1D5D8;
     }
 
     .note:active {
@@ -174,14 +174,14 @@ ul {
 
 .edit-button, .delete-button {
     padding: 5px 10px;
-    background-color: #5E7D5A;
+    background-color: #5C6A4D;
     color: #F8EEE7;
     border: none;
     cursor: pointer;
 }
 
 .delete-button {
-    background-color: #8B2F3F;
+    background-color: #8B3E3E;
 }
 
 .note:hover .buttons {
@@ -190,11 +190,11 @@ ul {
 }
 
 .edit-button:hover {
-    background-color: #324731;
+    background-color: #3E4B36;
 }
 
 .delete-button:hover {
-    background-color: #581C28;
+    background-color: #6D2F2F;
 }
 
 /* General Styling for Folder List */
@@ -238,7 +238,7 @@ ul {
 }
 
     .folder-link:hover {
-        color: #49233E;
+        color: #D1D5D8;
     }
 
 .folder-text {
@@ -250,8 +250,8 @@ ul {
 
 /* Hover effect for folder links */
 .folder-item:hover {
-    background-color: #BC97B2; /* Light background when hovered */
-    color: #49233E; /* Darker blue when hovered */
+    background-color: #464A4D; /* Light background when hovered */
+    color: #D1D5D8; /* Darker blue when hovered */
 }
 
     .folder-item:hover .buttons {
@@ -282,7 +282,7 @@ ul {
     .creation-button button {
         padding: 8px 15px;
         font-size: 1em;
-        background-color: #FF6381;
+        background-color: #8C8F93;
         color: white;
         border: none;
         border-radius: 5px;
@@ -291,7 +291,7 @@ ul {
     }
 
         .creation-button button:hover {
-            background-color: #FFA2B9;
+            background-color: #B3B6B9;
         }
 
 /* Folder Viewer Styles */
@@ -306,8 +306,8 @@ ul {
 }
 
     .file-item:hover {
-        background-color: #BC97B2;
-        color: #49233E;
+        background-color: #464A4D;
+        color: #D1D5D8;
     }
 
 .file-link {
@@ -322,8 +322,8 @@ ul {
 }
 
     .file-link:hover {
-        background-color: #BC97B2; /* Light blue background on hover */
-        color: #49233E; /* Darker blue when hovered */
+        background-color: #464A4D; /* Light blue background on hover */
+        color: #D1D5D8; /* Darker blue when hovered */
     }
 
 .file-icon {

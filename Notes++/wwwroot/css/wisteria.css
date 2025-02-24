@@ -87,18 +87,18 @@ h1:focus {
 }
 
 .top-row[b-eovwf8n2vw] { /* Navbar header */
-    background-color: #6495ED;
+    background-color: #4F3A75;
 }
 
 /* MainLayout css */
 .top-row[b-3azgan5sfe] { /* Main page header */
-    background-color: #4682B4;
+    background-color: #6F5C8E;
 }
 
 .page-title {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #555071; /* Text color for title */
+    color: #3F3A52; /* Text color for title */
 }
 
 .input-container {

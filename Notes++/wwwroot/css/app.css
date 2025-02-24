@@ -70,6 +70,16 @@ h1:focus {
         justify-content: center;
     }
 
+.top-row[b-eovwf8n2vw] { /* Navbar header */
+    background-color: #000033;
+}
+
+
+
+.top-row[b-3azgan5sfe] { /* Main page header */
+    background-color: mintcream;
+}
+
 .page-title {
     font-size: 1.5rem;
     font-weight: bold;
