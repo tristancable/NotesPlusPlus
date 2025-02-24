@@ -18,4 +18,3 @@ window.getThemeFromSession = () => {
 };
 
 
-// When theme is changed you cannot go back to default until you choose another theme
