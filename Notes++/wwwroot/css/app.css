@@ -86,15 +86,41 @@ h1:focus {
     color: #3E3C32; /* Text color for title */
 }
 
-.input-container {
+/*.input-container {
     position: fixed;
     top: 75px;
     display: flex;
-    gap: 10px; /* Space between the inputs */
-    background: white; /* Scale accordingly with width. height is not useful for our purposes */
-    width: 1000px; /* Doesn't change width of the buttons or input. Does change the width of the background */
-    z-index: 1000; /* Ensures it stays above other elements */
+    gap: 10px;*/ /* Space between the inputs */
+    /*background: white;*/ /* Scale accordingly with width. height is not useful for our purposes */
+    /*width: 1000px;*/ /* Doesn't change width of the buttons or input. Does change the width of the background */
+    /*z-index: 1000;*/ /* Ensures it stays above other elements */
+/*}*/
+
+.input-container {
+    position: fixed; /* Fix the container at the top */
+    padding: 10px; /* Add some padding for spacing */
+    background-color: white; /* Ensure the background is white */
+    z-index: 1000; /* Make sure it's above other content */
+    display: flex;
+    gap: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better visibility */
 }
+
+.input-right-side {
+    display: flex;
+    gap: 10px; /* Adds spacing between select and button */
+    align-items: center; /* Aligns elements vertically */
+}
+
+.text-modifiers {
+    margin-top: 10px; /* Add space between input section and text-modifier buttons */
+    display: flex;
+    gap: 5px;
+}
+
+    .text-modifiers button {
+        padding: 5px 10px;
+    }
 
 
 
@@ -124,14 +150,6 @@ label {
 
 input[type="checkbox"]:checked + label::before {
     color: red; /* Change color when checked */
-}
-
-.input-container input {
-    width: 25%; /* Make inputs and button take full width */
-}
-
-.input-container button {
-    width: 3%; /* Make buttons this width */
 }
 
 ul {

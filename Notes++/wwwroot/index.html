@@ -37,4 +37,8 @@
     function preventDragDefault(event) {
         event.preventDefault(); // This prevents the default browser behavior
     }
+
+    function isMobileDevice() {
+        return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+    }
 </script>
