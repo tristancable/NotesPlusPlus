@@ -105,7 +105,7 @@ h1:focus {
     display: flex;
     gap: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better visibility */
-    align-items:baseline;
+    align-items: center;
 }
 
 .input-right-side {
@@ -114,14 +114,9 @@ h1:focus {
 }
 
 .text-modifiers {
-    margin-top: 10px; /* Add space between input section and text-modifier buttons */
     display: flex;
     gap: 5px;
 }
-
-    .text-modifiers button {
-        padding: 5px 10px;
-    }
 /* End of input container styling */
 
 
