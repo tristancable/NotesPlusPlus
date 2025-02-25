@@ -102,6 +102,15 @@
         folders = FolderService.GetFolders(); // Refresh the folder list
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        var theme = await JS.InvokeAsync<string>("getThemeFromLocalStorage");
+        if (!string.IsNullOrEmpty(theme))
+        {
+            await JS.InvokeVoidAsync("setTheme", theme);
+        }
+    }
+
     private void PinItem(ChangeEventArgs e, string folderName)
     {
         bool isChecked = (bool)e.Value;

@@ -6,17 +6,25 @@
 @inject IJSRuntime JSRuntime
 
 <div class="input-container">
-    <input @bind="newNote" @oninput="OnSearchInput" @onkeydown="HandleKeyPress" placeholder="Search or write a note..." />
+    <input @bind="newNote" @oninput="OnSearchInput" @onkeypress="HandleKeyPress" placeholder="Search or write a note..." />
 
-    <select @onchange="ChangeCategory">
-        <option value="new">None</option>
-        <option value="cat1">Cat1</option>
-    </select>
-    <button @onclick="() => NewCategory()">New Category</button>
-</div>
-<div>
-    <button @onclick="() => ToggleBold()"><strong>B</strong></button>
-    <button @onclick="() => ToggleItalic()"><i>I</i></button>
+    @if (isMobile)
+    {
+        <button @onclick="AddNoteOrEditNote">Add Note</button>
+    }
+
+    <div class="input-right-side">
+        <select @onchange="ChangeCategory">
+            <option value="new">None</option>
+            <option value="cat1">Cat1</option>
+        </select>
+        <button @onclick="() => NewCategory()">New Category</button>
+    </div>
+
+    <div class="text-modifiers">
+        <button @onclick="() => ToggleBold()"><strong>B</strong></button>
+        <button @onclick="() => ToggleItalic()"><i>I</i></button>
+    </div>
 </div>
 
 <ul>
@@ -93,6 +101,14 @@
     private string currentCategory = null;
     private string addOrEditButtonText = "Add Note";
 
+    private bool isMobile = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isMobile = await JSRuntime.InvokeAsync<bool>("isMobileDevice");
+        StateHasChanged(); // Force re-render
+    }
+
     protected override void OnParametersSet()
     {
         LayoutService.PageTitle = $"/{folderName}/{fileName}";
@@ -117,7 +133,12 @@
 
     void HandleKeyPress(KeyboardEventArgs e)
     {
-        if (e.Key == "Enter") AddNoteOrEditNote();
+        Console.WriteLine($"Key Pressed: {e.Key}, Code: {e.Code}");
+
+        if (e.Key == "Enter" || e.Key == "Return") // Some mobile keyboards might return "Return"
+        {
+            AddNoteOrEditNote();
+        }
     }
 
     void AddNoteOrEditNote()
@@ -267,7 +288,6 @@
             filteredNotes[index - 1] = temp;
             ReorderNumbers();
             SaveFile();
-            FilterNotes();
         }
     }
 
@@ -280,7 +300,6 @@
             filteredNotes[index + 1] = temp;
             ReorderNumbers();
             SaveFile();
-            FilterNotes();
         }
     }
 

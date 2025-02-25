@@ -9,12 +9,10 @@
     existingLink.href = cssFile;
 };
 
-window.saveThemeToSession = (theme) => {
-    sessionStorage.setItem("selectedTheme", theme);
+window.saveThemeToLocalStorage = (theme) => {
+    localStorage.setItem("selectedTheme", theme);
 };
 
-window.getThemeFromSession = () => {
-    return sessionStorage.getItem("selectedTheme") || "css/default.css";
+window.getThemeFromLocalStorage = () => {
+    return localStorage.getItem("selectedTheme") || "css/app.css"; // Default to Light theme
 };
-
-

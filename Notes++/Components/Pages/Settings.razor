@@ -6,7 +6,7 @@
 <div class="themeOptions">Change Theme</div>
 <select @onchange="ChangeTheme">
     <option value="" disabled selected>Choose a theme</option>
-    <option value="css/default.css">Light</option>
+    <option value="css/app.css">Light</option>
     <option value="css/dark.css">Dark</option>
     <option value="css/amaranth.css">Amaranth</option>
     <option value="css/wisteria.css">Wisteria</option>
@@ -19,15 +19,31 @@
     {
         var theme = e.Value.ToString();
         await JS.InvokeVoidAsync("setTheme", theme);
-        await JS.InvokeVoidAsync("saveThemeToSession", theme); // Save theme in session storage
+        await JS.InvokeVoidAsync("saveThemeToLocalStorage", theme); // Save in localStorage
+        SaveThemeToPreferences(theme); // Save in .NET MAUI Preferences
     }
 
     protected override async Task OnInitializedAsync()
     {
-        var theme = await JS.InvokeAsync<string>("getThemeFromSession");
+        var theme = await JS.InvokeAsync<string>("getThemeFromLocalStorage");
+        if (string.IsNullOrEmpty(theme))
+        {
+            theme = GetThemeFromPreferences(); // Check .NET MAUI Preferences if localStorage is empty
+        }
+
         if (!string.IsNullOrEmpty(theme))
         {
             await JS.InvokeVoidAsync("setTheme", theme);
         }
+    }
+
+    private void SaveThemeToPreferences(string theme)
+    {
+        Preferences.Set("ThemePreference", theme); // Save the theme in .NET MAUI Preferences
+    }
+
+    private string GetThemeFromPreferences()
+    {
+        return Preferences.Get("ThemePreference", "css/app.css"); // Default to Light theme
     }
 }

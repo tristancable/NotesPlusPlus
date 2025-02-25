@@ -101,15 +101,29 @@ h1:focus {
     color: #3F3438; /* Text color for title */
 }
 
+/* Input container styling */
 .input-container {
+    position: fixed; /* Fix the container at the top */
+    padding: 10px; /* Add some padding for spacing */
+    background-color: white; /* Ensure the background is white */
+    z-index: 1000; /* Make sure it's above other content */
     display: flex;
-    gap: 10px; /* Space between the inputs */
+    gap: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better visibility */
+    background: #805F78;
+    align-items: center;
 }
 
-    .input-container input,
-    .input-container button {
-        width: 25%; /* Make inputs and button take full width */
-    }
+.input-right-side {
+    display: flex;
+    gap: 10px; /* Adds spacing between select and button */
+}
+
+.text-modifiers {
+    display: flex;
+    gap: 5px;
+}
+/* End of input container styling */
 
 ul {
     list-style-type: none;
