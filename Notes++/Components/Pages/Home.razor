@@ -12,20 +12,22 @@
 <ul class="folder-list">
     @foreach (var folderName in folders)
     {
-        <li class="folder-item">
+        var displayName = folderName.StartsWith("!!! ") ? folderName.Substring(4) : folderName;
+        var isPinned = folderName.StartsWith("!!! ");
+        <li class="folder-item" @key="folderName">
             <span class="folder-text">
-            <a href="@($"/folder/{folderName}")" class="folder-link">
-                <i class="folder-icon">
-                <i class="bi bi-folder"></i>
-                </i>
-                @folderName
-            </a>
+                <a href="@($"/folder/{folderName}")" class="folder-link">
+                    <i class="folder-icon">
+                        <i class="bi bi-folder"></i>
+                    </i>
+                    @displayName
+                </a>
             </span>
             <div class="buttons">
-                        <input type="checkbox" id="heart">
-                        <label for="heart"></label>
+                <input type="checkbox" id="heart" checked="@isPinned" @onchange="(e) => PinItem(e, folderName)">
+                <label for="heart"></label>
                 <button class="edit-button" @onclick="() => RenameFolder(folderName)">Edit</button>
-                    <button class="delete-button" @onclick="() => DeleteFolder(folderName)">Delete</button>
+                <button class="delete-button" @onclick="() => DeleteFolder(folderName)">Delete</button>
             </div>
         </li>
     }
@@ -55,6 +57,10 @@
         }
         else
         {
+            if (folderBeingEdited.StartsWith("!!! "))
+            {
+                newFolderName = $"!!! {newFolderName}";
+            }
 
             FolderService.UpdateFolderName(folderBeingEdited, newFolderName);
             folderBeingEdited = null;
@@ -69,7 +75,14 @@
 
     private void RenameFolder(string folderName)
     {
-        newFolderName = folderName;
+        if (folderName.StartsWith("!!! "))
+        {
+            newFolderName = folderName.Substring(4);
+        }
+        else
+        {
+            newFolderName = folderName;
+        }
         folderBeingEdited = folderName;
         ButtonText = "Save Changes";
     }
@@ -87,6 +100,20 @@
     {
         FolderService.DeleteFolder(folder);
         folders = FolderService.GetFolders(); // Refresh the folder list
+    }
+
+    private void PinItem(ChangeEventArgs e, string folderName)
+    {
+        bool isChecked = (bool)e.Value;
+
+        string newFolderName = isChecked ? $"!!! {folderName}" : (folderName.StartsWith("!!! ") ? folderName.Substring(4) : folderName);
+
+        if (newFolderName != folderName)
+        {
+            FolderService.UpdateFolderName(folderName, newFolderName);
+
+        }
+            folders = FolderService.GetFolders();
     }
 
 }
