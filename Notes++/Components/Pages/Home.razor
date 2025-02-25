@@ -22,6 +22,8 @@
             </a>
             </span>
             <div class="buttons">
+                        <input type="checkbox" id="heart">
+                        <label for="heart"></label>
                 <button class="edit-button" @onclick="() => RenameFolder(folderName)">Edit</button>
                     <button class="delete-button" @onclick="() => DeleteFolder(folderName)">Delete</button>
             </div>
@@ -85,6 +87,15 @@
     {
         FolderService.DeleteFolder(folder);
         folders = FolderService.GetFolders(); // Refresh the folder list
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var theme = await JS.InvokeAsync<string>("getThemeFromLocalStorage");
+        if (!string.IsNullOrEmpty(theme))
+        {
+            await JS.InvokeVoidAsync("setTheme", theme);
+        }
     }
 
 }

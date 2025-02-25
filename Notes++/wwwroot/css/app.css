@@ -77,7 +77,7 @@ h1:focus {
 
 
 .top-row[b-3azgan5sfe] { /* Main page header */
-    background-color: darkgrey;
+    background-color: mintcream;
 }
 
 .page-title {
@@ -126,9 +126,9 @@ h1:focus {
 
 /*           wacc heart input select box stuff         */
 
-input[type="checkbox"] {
-    display: none; /* Hide default checkbox */
-}
+/*input[type="checkbox"] {
+    display: none;*/ /* Hide default checkbox */
+/*}
 
 label {
     display: inline-block;
@@ -139,8 +139,8 @@ label {
 }
 
     label::before {
-        content: "❤"; /* Heart symbol */
-        font-size: 30px;
+        content: "❤";*/ /* Heart symbol */
+        /*font-size: 30px;
         color: gray;
         position: absolute;
         left: 0;
@@ -149,8 +149,11 @@ label {
     }
 
 input[type="checkbox"]:checked + label::before {
-    color: red; /* Change color when checked */
-}
+    color: red;*/ /* Change color when checked */
+/*}*/
+
+
+
 
 ul {
     list-style-type: none;
