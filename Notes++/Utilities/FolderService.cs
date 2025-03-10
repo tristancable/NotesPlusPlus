@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace Notes__.Utilities
+﻿namespace Notes__.Utilities
 {
     public class FolderService
     {

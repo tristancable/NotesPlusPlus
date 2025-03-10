@@ -20,77 +20,60 @@
 </div>
 
 <ul>
-    @foreach (var note in filteredNotes)
+    @foreach (var subcategory in filteredNotes)
     {
-        @if (bold & italic) 
+        <!-- Display subcategory name -->
+        <li class="subcategory">
+            <strong>@subcategory.Name</strong>
+        </li>
+
+        @foreach (var note in subcategory.Notes)
         {
-            var index = filteredNotes.IndexOf(note);
+            var index = subcategory.Notes.IndexOf(note);
+            var formattedContent = note.Content;
+
             <li class="note">
-                <span class="note-text"><strong><i>@note.Content</i></strong></span>
+                <span class="note-text">
+                    @if (bold && italic)
+                    {
+                        <strong><i>@formattedContent</i></strong>
+                    }
+                    else if (bold)
+                    {
+                        <strong>@formattedContent</strong>
+                    }
+                    else if (italic)
+                    {
+                        <i>@formattedContent</i>
+                    }
+                    else
+                    {
+                        @formattedContent
+                    }
+                </span>
                 <div class="buttons">
-                    <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
-                    <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
+                    <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(subcategory, index)" disabled="@(index == 0)"></button>
+                    <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(subcategory, index)" disabled="@(index == subcategory.Notes.Count - 1)"></button>
                     <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
                     <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
                 </div>
             </li>
-        }else
-        {
-            if(bold)
-            {
-                var index = filteredNotes.IndexOf(note);
-                <li class="note">
-                    <span class="note-text"><strong>@note.Content</strong></span>
-                    <div class="buttons">
-                        <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
-                        <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
-                        <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
-                        <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
-                    </div>
-                </li>
-            }else
-            {
-                if (italic)
-                {
-                    var index = filteredNotes.IndexOf(note);
-                    <li class="note">
-                        <span class="note-text"><i>@note.Content</i></span>
-                        <div class="buttons">
-                            <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
-                            <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
-                            <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
-                            <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
-                        </div>
-                    </li>
-                }else
-                {
-                    var index = filteredNotes.IndexOf(note);
-                    <li class="note">
-                        <span class="note-text">@note.Content</span>
-                        <div class="buttons">
-                            <button class="bi bi-arrow-up" @onclick="() => MoveNoteUp(index)" disabled="@(index == 0)"></button>
-                            <button class="bi bi-arrow-down" @onclick="() => MoveNoteDown(index)" disabled="@(index == filteredNotes.Count - 1)"></button>
-                            <button class="edit-button" @onclick="() => EditNote(note)">Edit</button>
-                            <button class="delete-button" @onclick="() => DeleteNote(note.Id)">Delete</button>
-                        </div>
-                    </li>
-                }
-            }
         }
     }
 </ul>
+
 
 @code {
     [Parameter] public string folderName { get; set; }
     [Parameter] public string fileName { get; set; }
 
-    private List<Note> notes = new();
-    private List<Note> filteredNotes = new();
+    private List<Subcategory> notes = new() { new Subcategory("") };
+    private List<Subcategory> filteredNotes = new() { new Subcategory("") };
     private string newNote = "";
     private bool bold = false;
     private bool italic = false;
     private string currentNoteToEdit = null;
-    private string currentCategory = null;
+    private Subcategory currentCategory = null;
     private string addOrEditButtonText = "Add Note";
 
     protected override void OnParametersSet()
@@ -126,24 +109,27 @@
         {
             if (!string.IsNullOrEmpty(currentNoteToEdit))
             {
-                // Edit existing note by Id
-                var noteToEdit = notes.FirstOrDefault(n => n.Id.ToString() == currentNoteToEdit);
-                if (noteToEdit != null)
+                foreach (Subcategory subcategory in notes)
                 {
-                    switch (LayoutService.Format) // Update the content of the note
+                    // Edit existing note by Id
+                    var noteToEdit = subcategory.Notes.FirstOrDefault(n => n.Id.ToString() == currentNoteToEdit);
+                    if (noteToEdit != null)
                     {
-                        case LayoutService.EFormat.BULLETPOINT:
-                            noteToEdit.Content = $"• {newNote}";
-                            break;
-                        case LayoutService.EFormat.NUMBERED:
-                            noteToEdit.Content = $"{LayoutService.EditNumber}. {newNote}";
-                            break;
-                        default:
-                            noteToEdit.Content = newNote;
-                            break;
+                        switch (LayoutService.Format) // Update the content of the note
+                        {
+                            case LayoutService.EFormat.BULLETPOINT:
+                                noteToEdit.Content = $"• {newNote}";
+                                break;
+                            case LayoutService.EFormat.NUMBERED:
+                                noteToEdit.Content = $"{LayoutService.EditNumber}. {newNote}";
+                                break;
+                            default:
+                                noteToEdit.Content = newNote;
+                                break;
+                        }
+                        currentNoteToEdit = null;  // Reset edit context
+                        addOrEditButtonText = "Add Note";  // Reset button text
                     }
-                    currentNoteToEdit = null;  // Reset edit context
-                    addOrEditButtonText = "Add Note";  // Reset button text
                 }
             }
             else
@@ -151,13 +137,13 @@
                 switch (LayoutService.Format) // Add new note
                 {
                     case LayoutService.EFormat.BULLETPOINT:
-                        notes.Add(new Note($"• {newNote}"));
+                        currentCategory.Notes.Add(new Note($"• {newNote}"));
                         break;
                     case LayoutService.EFormat.NUMBERED:
-                        notes.Add(new Note($"{notes.Count() + 1}. {newNote}"));
+                        currentCategory.Notes.Add(new Note($"{notes.Count() + 1}. {newNote}"));
                         break;
                     default:
-                        notes.Add(new Note(newNote)); // Add a new note with a unique ID
+                        currentCategory.Notes.Add(new Note(newNote)); // Add a new note with a unique ID
                         break;
                 }
             }
@@ -187,9 +173,21 @@
                 Console.WriteLine($"File content loaded: {content.Length} characters.");
             }
 
-            notes = string.IsNullOrWhiteSpace(content) ? new List<Note>() : content.Split('\n')
-                    .Select(line => new Note(line))  // Create Note objects
-                    .ToList();
+            Subcategory currentSubcategory = notes[0];
+            foreach(string line in content.Split("\n").ToList())
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    currentSubcategory = null;
+                    continue;
+                }
+                if (currentSubcategory == null)
+                {
+                    currentSubcategory = new Subcategory(line);
+                    notes.Add(currentSubcategory);
+                }
+                else currentSubcategory.Notes.Add(new Note(line));
+            }
             FilterNotes();
         }
         catch (Exception ex)
@@ -202,7 +200,16 @@
     {
         try
         {
-            FolderService.SaveFileContent(folderName, fileName, string.Join("\n", notes.Select(n => n.Content)));  // Save the content of each note
+            var lines = new List<string>();
+
+            foreach (var subcategory in notes)
+            {
+                if (!string.IsNullOrWhiteSpace(subcategory.Name)) lines.Add(""); // Empty line before subcategory name except the default
+                lines.Add(subcategory.Name); // Subcategory name
+                lines.AddRange(subcategory.Notes.Select(n => n.Content)); // Notes under subcategory
+            }
+
+            FolderService.SaveFileContent(folderName, fileName, string.Join("\n", lines));
         }
         catch (Exception ex)
         {
@@ -210,13 +217,15 @@
         }
     }
 
+
     void FilterNotes()
     {
         try
         {
-            filteredNotes = string.IsNullOrEmpty(newNote) ? notes :
-                notes.Where(n => n.Content.Contains(newNote, StringComparison.OrdinalIgnoreCase)).ToList();
-
+            filteredNotes = string.IsNullOrEmpty(newNote) ? notes : notes.Where(s => s.Notes.Any(n => n.Content.Contains(newNote, StringComparison.OrdinalIgnoreCase))).Select(s => new Subcategory(s.Name)
+            {
+                Notes = s.Notes.Where(n => n.Content.Contains(newNote, StringComparison.OrdinalIgnoreCase)).ToList()
+            }).ToList();
             Console.WriteLine($"Filtered notes count: {filteredNotes.Count}");
         }
         catch (Exception ex)
@@ -249,35 +258,39 @@
 
     void DeleteNote(Guid noteId)
     {
-        var noteToDelete = notes.FirstOrDefault(n => n.Id == noteId);
-        if (noteToDelete != null)
+        foreach (Subcategory subcategory in notes)
         {
-            notes.Remove(noteToDelete);
-            ReorderNumbers();
-            SaveFile();
+            Note noteToDelete = subcategory.Notes.FirstOrDefault(n => n.Id == noteId);
+            if (noteToDelete != null)
+            {
+                subcategory.Notes.Remove(noteToDelete);
+                ReorderNumbers();
+                SaveFile();
+                return; // Exit after deleting to avoid unnecessary iterations
+            }
         }
     }
 
-    void MoveNoteUp(int index)
+    void MoveNoteUp(Subcategory subcategory, int index)
     {
         if (index > 0)
         {
-            var temp = filteredNotes[index];
-            filteredNotes[index] = filteredNotes[index - 1];
-            filteredNotes[index - 1] = temp;
+            var temp = subcategory.Notes[index];
+            subcategory.Notes[index] = subcategory.Notes[index - 1];
+            subcategory.Notes[index - 1] = temp;
             ReorderNumbers();
             SaveFile();
             FilterNotes();
         }
     }
 
-    void MoveNoteDown(int index)
+    void MoveNoteDown(Subcategory subcategory, int index)
     {
-        if (index < filteredNotes.Count - 1)
+        if (index < subcategory.Notes.Count - 1)
         {
-            var temp = filteredNotes[index];
-            filteredNotes[index] = filteredNotes[index + 1];
-            filteredNotes[index + 1] = temp;
+            var temp = subcategory.Notes[index];
+            subcategory.Notes[index] = subcategory.Notes[index + 1];
+            subcategory.Notes[index + 1] = temp;
             ReorderNumbers();
             SaveFile();
             FilterNotes();
@@ -288,14 +301,23 @@
     {
         if (LayoutService.Format == LayoutService.EFormat.NUMBERED)
         {
-            for (int i = 0; i < notes.Count(); i++)
+            foreach (var subcategory in filteredNotes)
             {
-                var s = notes[i].Content.Length;
-                string n = notes[i].Content.Substring(1, notes[i].Content.Length - 1);
-                notes[i].Content = $"{i + 1}{n}";
+                for (int i = 0; i < subcategory.Notes.Count; i++)
+                {
+                    // Remove old numbering (assuming format is "X. Content")
+                    string contentWithoutNumber = subcategory.Notes[i].Content.Contains(". ")
+                        ? subcategory.Notes[i].Content.Substring(subcategory.Notes[i].Content.IndexOf(". ") + 2)
+                        : subcategory.Notes[i].Content;
+
+                    // Apply new numbering within the subcategory
+                    subcategory.Notes[i].Content = $"{i + 1}. {contentWithoutNumber}";
+                }
             }
         }
     }
+
+
     void ToggleBold()
     {
         if (bold)
@@ -307,6 +329,7 @@
             bold = true;
         }
     }
+
     void ToggleItalic()
     {
         if (italic)
@@ -327,7 +350,8 @@
 
     void NewCategory() 
     { //very very basic and lacking
-        currentCategory = newNote;
+        Subcategory newCategory = new Subcategory(newNote);
+        currentCategory = newCategory;
         newNote = "";
     }
 }

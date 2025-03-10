@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Notes__.Utilities
+﻿namespace Notes__.Utilities
 {
     public class LayoutService
     {
