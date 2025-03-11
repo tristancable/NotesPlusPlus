@@ -7,22 +7,26 @@
 
 <div class="input-container">
     <input @bind="newNote" @oninput="OnSearchInput" @onkeydown="HandleKeyPress" placeholder="Search or write a note..." />
-
+    <!-- Currently selected value is not updated when creating a new category -->
+    <!-- Also, style this section -->
     <select @onchange="ChangeCategory">
-        <option value="new">None</option>
-        <option value="cat1">Cat1</option>
+        @foreach (Subcategory subcategory in notes) { <option value="@subcategory.Name">@subcategory.Name</option> }
     </select>
     <button @onclick="() => NewCategory()">New Category</button>
-</div>
-<div>
-    <button @onclick="() => ToggleBold()"><strong>B</strong></button>
-    <button @onclick="() => ToggleItalic()"><i>I</i></button>
+    <div>
+        <button @onclick="() => ToggleBold()"><strong>B</strong></button>
+        <button @onclick="() => ToggleItalic()"><i>I</i></button>
+    </div>
 </div>
 
 <ul>
+    <!-- Needs styling to not have overlap -->
     @foreach (var subcategory in filteredNotes)
     {
-        <!-- Display subcategory name -->
+        @if (subcategory != filteredNotes.First())
+        {
+            <hr />
+        }
         <li class="subcategory">
             <strong>@subcategory.Name</strong>
         </li>
@@ -67,14 +71,13 @@
     [Parameter] public string folderName { get; set; }
     [Parameter] public string fileName { get; set; }
 
-    private List<Subcategory> notes = new() { new Subcategory("") };
-    private List<Subcategory> filteredNotes = new() { new Subcategory("") };
+    private List<Subcategory> notes = new() { new Subcategory(" ") };
+    private List<Subcategory> filteredNotes = new() { new Subcategory(" ") };
     private string newNote = "";
     private bool bold = false;
     private bool italic = false;
     private string currentNoteToEdit = null;
     private Subcategory currentCategory = null;
-    private string addOrEditButtonText = "Add Note";
 
     protected override void OnParametersSet()
     {
@@ -88,7 +91,8 @@
             if (fileName.EndsWith(" - B")) LayoutService.Format = LayoutService.EFormat.BULLETPOINT;
             else if (fileName.EndsWith(" - N")) LayoutService.Format = LayoutService.EFormat.NUMBERED;
             else LayoutService.Format = LayoutService.EFormat.BASIC;
-            LoadFile(); // Load the file content
+            LoadFile();
+            currentCategory = notes[0];
         }
     }
 
@@ -111,11 +115,10 @@
             {
                 foreach (Subcategory subcategory in notes)
                 {
-                    // Edit existing note by Id
                     var noteToEdit = subcategory.Notes.FirstOrDefault(n => n.Id.ToString() == currentNoteToEdit);
                     if (noteToEdit != null)
                     {
-                        switch (LayoutService.Format) // Update the content of the note
+                        switch (LayoutService.Format)
                         {
                             case LayoutService.EFormat.BULLETPOINT:
                                 noteToEdit.Content = $"• {newNote}";
@@ -127,14 +130,13 @@
                                 noteToEdit.Content = newNote;
                                 break;
                         }
-                        currentNoteToEdit = null;  // Reset edit context
-                        addOrEditButtonText = "Add Note";  // Reset button text
+                        currentNoteToEdit = null;
                     }
                 }
             }
             else
             {
-                switch (LayoutService.Format) // Add new note
+                switch (LayoutService.Format)
                 {
                     case LayoutService.EFormat.BULLETPOINT:
                         currentCategory.Notes.Add(new Note($"• {newNote}"));
@@ -143,7 +145,7 @@
                         currentCategory.Notes.Add(new Note($"{notes.Count() + 1}. {newNote}"));
                         break;
                     default:
-                        currentCategory.Notes.Add(new Note(newNote)); // Add a new note with a unique ID
+                        currentCategory.Notes.Add(new Note(newNote));
                         break;
                 }
             }
@@ -176,7 +178,7 @@
             Subcategory currentSubcategory = notes[0];
             foreach(string line in content.Split("\n").ToList())
             {
-                if (string.IsNullOrWhiteSpace(line))
+                if (string.IsNullOrEmpty(line))
                 {
                     currentSubcategory = null;
                     continue;
@@ -204,9 +206,9 @@
 
             foreach (var subcategory in notes)
             {
-                if (!string.IsNullOrWhiteSpace(subcategory.Name)) lines.Add(""); // Empty line before subcategory name except the default
-                lines.Add(subcategory.Name); // Subcategory name
-                lines.AddRange(subcategory.Notes.Select(n => n.Content)); // Notes under subcategory
+                if (!string.IsNullOrEmpty(subcategory.Name)) lines.Add("");
+                lines.Add(subcategory.Name);
+                lines.AddRange(subcategory.Notes.Select(n => n.Content));
             }
 
             FolderService.SaveFileContent(folderName, fileName, string.Join("\n", lines));
@@ -236,7 +238,6 @@
 
     void EditNote(Note note)
     {
-        // Set the currentNoteToEdit to the Id of the note being edited
         currentNoteToEdit = note.Id.ToString();
         switch (LayoutService.Format)
         {
@@ -253,7 +254,6 @@
                 newNote = note.Content;
                 break;
         }
-        addOrEditButtonText = "Save Changes"; // Change button text to "Save Changes"
     }
 
     void DeleteNote(Guid noteId)
@@ -266,7 +266,7 @@
                 subcategory.Notes.Remove(noteToDelete);
                 ReorderNumbers();
                 SaveFile();
-                return; // Exit after deleting to avoid unnecessary iterations
+                return;
             }
         }
     }
@@ -305,13 +305,9 @@
             {
                 for (int i = 0; i < subcategory.Notes.Count; i++)
                 {
-                    // Remove old numbering (assuming format is "X. Content")
-                    string contentWithoutNumber = subcategory.Notes[i].Content.Contains(". ")
-                        ? subcategory.Notes[i].Content.Substring(subcategory.Notes[i].Content.IndexOf(". ") + 2)
-                        : subcategory.Notes[i].Content;
-
-                    // Apply new numbering within the subcategory
-                    subcategory.Notes[i].Content = $"{i + 1}. {contentWithoutNumber}";
+                    var s = subcategory.Notes[i].Content.Length;
+                    string n = subcategory.Notes[i].Content.Substring(1, subcategory.Notes[i].Content.Length - 1);
+                    subcategory.Notes[i].Content = $"{i + 1}{n}";
                 }
             }
         }
@@ -342,16 +338,19 @@
         }
     }
 
-    private async Task ChangeCategory(ChangeEventArgs e)
+    private void ChangeCategory(ChangeEventArgs e)
     {
-        //var category = e.Value.ToString();
-
+        currentCategory = notes.FirstOrDefault(c => c.Name.Equals(e.Value));
     }
 
     void NewCategory() 
-    { //very very basic and lacking
-        Subcategory newCategory = new Subcategory(newNote);
-        currentCategory = newCategory;
-        newNote = "";
+    {
+        if (!string.IsNullOrWhiteSpace(newNote) && !notes.Contains(notes.FirstOrDefault(c => c.Name.Equals(newNote))))
+        {
+            Subcategory newCategory = new Subcategory(newNote);
+            notes.Add(newCategory);
+            currentCategory = newCategory;
+            newNote = "";
+        }
     }
 }
