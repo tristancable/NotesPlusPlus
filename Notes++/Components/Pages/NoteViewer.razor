@@ -71,7 +71,7 @@
     [Parameter] public string folderName { get; set; }
     [Parameter] public string fileName { get; set; }
 
-    private List<Subcategory> notes = new() { new Subcategory(" ") };
+    private List<Subcategory> notes = new();
     private List<Subcategory> filteredNotes = new() { new Subcategory(" ") };
     private string newNote = "";
     private bool bold = false;
@@ -174,8 +174,8 @@
             {
                 Console.WriteLine($"File content loaded: {content.Length} characters.");
             }
-
-            Subcategory currentSubcategory = notes[0];
+            notes = new List<Subcategory>();
+            Subcategory currentSubcategory = null;
             foreach(string line in content.Split("\n").ToList())
             {
                 if (string.IsNullOrEmpty(line))
@@ -190,6 +190,7 @@
                 }
                 else currentSubcategory.Notes.Add(new Note(line));
             }
+            if (content.Length == 0) notes.Add(new Subcategory(" "));
             FilterNotes();
         }
         catch (Exception ex)
@@ -210,7 +211,6 @@
                 lines.Add(subcategory.Name);
                 lines.AddRange(subcategory.Notes.Select(n => n.Content));
             }
-
             FolderService.SaveFileContent(folderName, fileName, string.Join("\n", lines));
         }
         catch (Exception ex)
@@ -351,6 +351,7 @@
             notes.Add(newCategory);
             currentCategory = newCategory;
             newNote = "";
+            SaveFile();
             FilterNotes();
         }
     }
