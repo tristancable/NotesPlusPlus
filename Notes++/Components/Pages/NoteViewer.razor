@@ -10,7 +10,10 @@
     <!-- Currently selected value is not updated when creating a new category -->
     <!-- Also, style this section -->
     <select @onchange="ChangeCategory">
-        @foreach (Subcategory subcategory in notes) { <option value="@subcategory.Name">@subcategory.Name</option> }
+    @foreach (Subcategory subcategory in notes)
+    {
+        <option value="@subcategory.Name" selected="@subcategory.Name == currentCategory?.Name">@subcategory.Name</option>
+    }
     </select>
     <button @onclick="() => NewCategory()">New Category</button>
     <div>
@@ -20,17 +23,22 @@
 </div>
 
 <ul>
-    <!-- Needs styling to not have overlap -->
-    @foreach (var subcategory in filteredNotes)
+    @foreach (Subcategory subcategory in filteredNotes)
     {
-        @if (subcategory != filteredNotes.First())
+        // ✅ Don't show a title if the category is the default " "
+        @if (subcategory.Name != " ")
         {
-            <hr />
+            @if (subcategory != filteredNotes.First())
+            {
+                <hr />
+            }
+            <li class="subcategory">
+                <strong>@subcategory.Name</strong>
+                <button class="delete-button" @onclick="() => DeleteSubcategory(subcategory.Name)">Delete</button>
+            </li>
         }
-        <li class="subcategory">
-            <strong>@subcategory.Name</strong>
-        </li>
 
+        <!-- Always render notes regardless of category title -->
         @foreach (var note in subcategory.Notes)
         {
             var index = subcategory.Notes.IndexOf(note);
@@ -65,7 +73,6 @@
         }
     }
 </ul>
-
 
 @code {
     [Parameter] public string folderName { get; set; }
@@ -354,5 +361,11 @@
             SaveFile();
             FilterNotes();
         }
+    }
+
+    void DeleteSubcategory(string name)
+    {
+        notes.Remove(notes.FirstOrDefault(c => c.Name.Equals(name)));
+        SaveFile();
     }
 }
