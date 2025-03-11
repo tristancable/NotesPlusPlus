@@ -16,7 +16,9 @@
         @foreach (var file in files)
         {
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file);
-            <li class="file-item">
+            var isPinned = fileNameWithoutExtension.StartsWith("!!! ");
+            if (fileNameWithoutExtension.StartsWith("!!! ")) fileNameWithoutExtension = fileNameWithoutExtension.Substring(4);
+            <li class="file-item" @key="file">
                 <span class="file-text">
                     <a href="@($"/note/{folderName}/{fileNameWithoutExtension}")" class="file-link">
                         <i class="file-icon">
@@ -26,7 +28,7 @@
                     </a>
                 </span>
                 <div class="buttons">
-                    <input type="checkbox" id="heart">
+                    <input type="checkbox" id="heart" checked="@isPinned" @onchange="(e) => PinItem(e, file)">
                     <label for="heart"></label>
                     <button class="edit-button" @onclick="() => RenameFile(file)">Edit</button>
                     <button class="delete-button" @onclick="() => DeleteFile(file)">Delete</button>
@@ -66,6 +68,11 @@
         }
         else
         {
+            if (fileBeingEdited.StartsWith("!!! "))
+            {
+                newFileName = $"!!! {newFileName}";
+            }
+
             FolderService.UpdateFileName(folderName, fileBeingEdited, newFileName);
             fileBeingEdited = null;
         }
@@ -111,11 +118,16 @@
 
     private void RenameFile(string fileName) 
     {
-        newFileName = fileName;
+        if (fileName.StartsWith("!!! ")) {
+            newFileName = fileName.Substring(4);
+
+        } else {
+            newFileName = fileName;
+        }
         fileBeingEdited = fileName;
         ButtonText = "Save Changes";
     }
-    
+
 
     async Task DeleteFile(string fileName) 
     {
@@ -130,12 +142,21 @@
     {
         FolderService.DeleteFile(folderName, file);
         files = FolderService.GetFilesInFolder(folderName);
+    }
 
-            // how the heck did this get into my delete method?  v
 
-            // FolderService.CreateFileInFolder(folderName, $"{newFileName} - N");
-            // files = FolderService.GetFilesInFolder(folderName);
-            // newFileName = string.Empty;
-            // LayoutService.Format = LayoutService.EFormat.NUMBERED;
+    private void PinItem(ChangeEventArgs e, string file) 
+    {
+        bool isChecked = (bool)e.Value; // Cast the checkbox value to bool
+
+        string newFileName = isChecked ? $"!!! {file}" : (file.StartsWith("!!! ") ? file.Substring(4) : file);
+
+        if (newFileName != file)
+        {
+            FolderService.UpdateFileName(folderName, file, newFileName);
+
+        }
+
+            files = FolderService.GetFilesInFolder(folderName);
     }
 }
