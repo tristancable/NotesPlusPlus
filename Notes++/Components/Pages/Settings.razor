@@ -14,7 +14,28 @@
     <option value="css/cornflower.css">Cornflower</option>
 </select>
 
+@* <div class="Directory"> *@
+@*     <button @onclick="ChooseDirectory">Choose Directory</button> *@
+@*     <p>Selected Directory: @selectedDirectory</p> *@
+@* </div> *@
+
 @code {
+    // private string selectedDirectory;
+
+    // protected override void OnInitialized()
+    // {
+    //     selectedDirectory = Preferences.Get("UserDirectory", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+    // }
+
+    // private async Task ChooseDirectory()
+    // {
+    //     selectedDirectory = await JS.InvokeAsync<string>("chooseDirectory");
+    //     if (!string.IsNullOrEmpty(selectedDirectory))
+    //     {
+    //         Preferences.Set("UserDirectory", selectedDirectory);
+    //     }
+    // }
+
     private async Task ChangeTheme(ChangeEventArgs e)
     {
         var theme = e.Value.ToString();
